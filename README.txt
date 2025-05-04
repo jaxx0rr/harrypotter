@@ -1,5 +1,8 @@
 I made version 1.20.1 because the original creator abandoned this project..
 
+you can download the mod here
+https://github.com/jaxx0rr/harrypotter/raw/refs/heads/1.20.1/mod/harrypotter-1.20.1-2.0.2_20250504.jar
+
 this is the original creator:
 https://github.com/yourdailymodder
 
