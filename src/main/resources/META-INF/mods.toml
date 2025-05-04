@@ -4,7 +4,7 @@ license="All rights reserved"
 
 [[mods]]
 modId="harrypotter"
-version="2.0.1.1201"
+version="1.20.1-2.0.2_20250504"
 displayName="YDM's Harry Potter"
 displayURL="https://www.curseforge.com/minecraft/mc-mods/ydms-wizarding-world-of-harry-potter"
 credits="minecraftserverzone.com, "
@@ -17,7 +17,7 @@ This mod adds:
 -broomstick
 -simple level up system for the spells
 
-(updated to 1.20.1 by JX)
+(unofficial update to 1.20.1 by JX)
 
 More info at the curseforge page.
 
@@ -34,8 +34,6 @@ Thanks for downloading this mod!
 [[dependencies.harrypotter]]
     modId="minecraft"
     mandatory=true
-	versionRange="[1.20.1,1.21)"
+	versionRange="[1.20.1,1.20.2)"
     ordering="NONE"
     side="BOTH"
-
-displayTest = "MATCH_VERSION"
