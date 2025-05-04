@@ -54,7 +54,7 @@ public class AvadaKedavraRenderer extends EntityRenderer<AvadaKedavra> {
     	 LivingEntity livingentity = (LivingEntity) p_115373_.getOwner();
       if (livingentity != null) {
          float f = 1;
-         float f1 = (float)p_115373_.level.getGameTime() + p_115375_;
+         float f1 = (float)p_115373_.level().getGameTime() + p_115375_;
          float f2 = f1 * 0.5F % 1.0F;
          float f3 = p_115373_.getEyeHeight();
          p_115376_.pushPose();

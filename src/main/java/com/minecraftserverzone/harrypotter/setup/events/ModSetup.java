@@ -34,36 +34,61 @@ import com.minecraftserverzone.harrypotter.spells.glacius.IceEntityModel;
 import com.minecraftserverzone.harrypotter.spells.incendio.IncendioModel;
 import com.minecraftserverzone.harrypotter.spells.melofors.MeloforsModel;
 import com.minecraftserverzone.harrypotter.spells.sectumsempra.SectumsempraModel;
-
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
-import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.SpawnPlacementRegisterEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
 @Mod.EventBusSubscriber(modid = HarryPotterMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+
 public class ModSetup {
-	
-	@SubscribeEvent
-	public static void registerCreativeModeTab(CreativeModeTabEvent.Register event) {
-        event.registerCreativeModeTab(new ResourceLocation(HarryPotterMod.MODID, "harrypotter"),
-                builder -> builder.icon(() -> new ItemStack(Registrations.APPRENTICE_WAND.get()))
-                .title(Component.translatable("itemGroup." + HarryPotterMod.MODID))
-                //.withLabelColor(0xDDBB00)
-                .displayItems((features, output, hasPermissions) -> {
-                	Registrations.ITEMS.getEntries().forEach((s)-> output.accept(new ItemStack(s.get())));
-               }));
+
+	public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB,
+			HarryPotterMod.MODID);
+
+	public static final RegistryObject<CreativeModeTab> HARRYPOTTER_TAB =
+			CREATIVE_MODE_TABS.register("harrypotter",
+					() -> CreativeModeTab.builder()
+							.icon(() -> new ItemStack(Registrations.APPRENTICE_WAND.get()))
+							.title(Component.translatable("itemGroup." + HarryPotterMod.MODID))
+							.displayItems((parameters, output) -> {
+								Registrations.ITEMS.getEntries().forEach(item -> output.accept(item.get()));
+							})
+							.build());
+
+	public static void register(IEventBus eventBus){
+		CREATIVE_MODE_TABS.register(eventBus);
 	}
-	
+
+	/*
+	public static RegistryObject<CreativeModeTab> HARRYPOTTER_TAB = CREATIVE_MODE_TABS.register("harrypotter",
+			() -> CreativeModeTab.builder()
+					.icon(() -> new ItemStack(Registrations.APPRENTICE_WAND.get()))
+					.title(Component.translatable("itemGroup." + HarryPotterMod.MODID))
+					.displayItems((features, output, hasPermissions) -> {
+						Registrations.ITEMS.getEntries().forEach((s)-> output.accept(new ItemStack(s.get())));
+					})
+					.build());
+	*/
+
+	//TODO ENABLE
+
+
+
+
 	@SubscribeEvent
 	public static void registerSpawnPlacements(SpawnPlacementRegisterEvent event) {
 		event.register(Registrations.DEMENTOR.get(), SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Dementor::checkMobSpawnRules, SpawnPlacementRegisterEvent.Operation.AND);

@@ -66,7 +66,7 @@ public class ExpectoPatronum extends NormalBallTypeSpell {
 	protected void onHit(HitResult p_37388_) {
 		super.onHit(p_37388_);
 		
-		if (this.level.isClientSide) {
+		if (this.level().isClientSide) {
 			Vec3 vec3 = this.getDeltaMovement();
 	         double d0 = this.getX() + vec3.x;
 	         double d1 = this.getY() + vec3.y;
@@ -74,15 +74,15 @@ public class ExpectoPatronum extends NormalBallTypeSpell {
 	         
 	            for(int i = 0; i < 10; ++i) {
 	               float f1 =  i* 0.05F;
-	               this.level.addParticle(this.getTrailParticle(), d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1, vec3.x, vec3.y, vec3.z);
+	               this.level().addParticle(this.getTrailParticle(), d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1, vec3.x, vec3.y, vec3.z);
 	            }
 		}
 		
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			//summon patronusMob
-			PatronusDeer cs = Registrations.PATRONUS_DEER.get().create(level);
+			PatronusDeer cs = Registrations.PATRONUS_DEER.get().create(level());
 			cs.moveTo(this.getX(), this.getY() + 1D, this.getZ(), this.random.nextFloat() * 360.0F, 0.0F);
-			this.level.addFreshEntity(cs);
+			this.level().addFreshEntity(cs);
 			this.discard();
 		}
 	}

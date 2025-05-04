@@ -39,7 +39,7 @@ public class Depulso extends NormalBallTypeSpell {
 	@Override
 	public void tick() {
 		
-		List<Entity> livingEntitiesNear = this.level.getEntities(this, new AABB(this.getX() - 3.0D, this.getY() - 3.0D, this.getZ() - 3.0D, this.getX() + 3.0D, this.getY() + 3.0D, this.getZ() + 3.0D), Entity::isAlive);
+		List<Entity> livingEntitiesNear = this.level().getEntities(this, new AABB(this.getX() - 3.0D, this.getY() - 3.0D, this.getZ() - 3.0D, this.getX() + 3.0D, this.getY() + 3.0D, this.getZ() + 3.0D), Entity::isAlive);
 		for(Entity entity : livingEntitiesNear) {
 			Entity owner = this.getOwner();
 			if(entity != this.getOwner() && owner != null) {
@@ -68,7 +68,7 @@ public class Depulso extends NormalBallTypeSpell {
 	
 	protected void onHitEntity(EntityHitResult p_37386_) {
 		super.onHitEntity(p_37386_);
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 		}
 	}
 	
@@ -86,7 +86,7 @@ public class Depulso extends NormalBallTypeSpell {
 	protected void onHit(HitResult p_37388_) {
 		super.onHit(p_37388_);
 		
-		if (this.level.isClientSide) {
+		if (this.level().isClientSide) {
 			Vec3 vec3 = this.getDeltaMovement();
 	         double d0 = this.getX() + vec3.x;
 	         double d1 = this.getY() + vec3.y;
@@ -94,11 +94,11 @@ public class Depulso extends NormalBallTypeSpell {
 	         
 	            for(int i = 0; i < 10; ++i) {
 	               float f1 =  i* 0.05F;
-	               this.level.addParticle(this.getTrailParticle(), d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1, vec3.x, vec3.y, vec3.z);
+	               this.level().addParticle(this.getTrailParticle(), d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1, vec3.x, vec3.y, vec3.z);
 	            }
 		}
 		
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			this.discard();
 		}
 	}

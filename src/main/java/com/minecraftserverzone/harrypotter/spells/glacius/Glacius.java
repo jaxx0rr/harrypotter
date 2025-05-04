@@ -2,6 +2,11 @@ package com.minecraftserverzone.harrypotter.spells.glacius;
 
 import java.util.List;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageType;
 import org.joml.Vector3f;
 
 import com.minecraftserverzone.harrypotter.HarryPotterMod;
@@ -15,7 +20,6 @@ import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.IndirectEntityDamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -31,6 +35,8 @@ import net.minecraft.world.phys.Vec3;
 public class Glacius extends DamageSpell {
 
 	private boolean foundTarget = false;
+
+	ResourceLocation instantdeath = new ResourceLocation("harrypotter", "instantdeath");
 
 	public Glacius(EntityType<? extends Glacius> p_37364_, Level p_37365_) {
 		super(p_37364_, p_37365_);
@@ -50,19 +56,19 @@ public class Glacius extends DamageSpell {
 	public void tick() {
 			if(this.isInWater()) {
 				BlockPos blockpos = new BlockPos(this.blockPosition());
-				level.setBlock(blockpos, Blocks.ICE.defaultBlockState(), 3);
-				level.gameEvent(this, GameEvent.BLOCK_PLACE, blockpos);
+				level().setBlock(blockpos, Blocks.ICE.defaultBlockState(), 3);
+				level().gameEvent(this, GameEvent.BLOCK_PLACE, blockpos);
 				this.discard();
 			}
 		
 		if (this.tickCount % 1000 == 0 ) {
-			if (!this.level.isClientSide) {
+			if (!this.level().isClientSide) {
 				this.discard();
 			}
 		}
 		
 		if(!this.isPassenger()) {
-			if (!this.level.isClientSide && foundTarget) {
+			if (!this.level().isClientSide && foundTarget) {
 				this.discard();
 			}
 			Vec3 vec3 = this.getDeltaMovement();
@@ -73,12 +79,12 @@ public class Glacius extends DamageSpell {
 			for(float i = -1; i < 2; ++i) {
 	        	for(float j = -1; j < 2; ++j) {
 	        		for(float k = -1; k < 2; ++k) {
-	        			this.level.addParticle(this.getTrailParticle(), d0 - vec3.x + i/10, 0.2f + d1 - vec3.y + j/10, d2 - vec3.z + k/10, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
+	        			this.level().addParticle(this.getTrailParticle(), d0 - vec3.x + i/10, 0.2f + d1 - vec3.y + j/10, d2 - vec3.z + k/10, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
 	        		}
 	        	}
 	        }
 			
-			List<Entity> livingEntitiesNear = this.level.getEntities(this, new AABB(this.getX() - 1.0D, this.getY() - 1.0D, this.getZ() - 1.0D, this.getX() + 1.0D, this.getY() + 1.0D, this.getZ() + 1.0D), Entity::isAlive);
+			List<Entity> livingEntitiesNear = this.level().getEntities(this, new AABB(this.getX() - 1.0D, this.getY() - 1.0D, this.getZ() - 1.0D, this.getX() + 1.0D, this.getY() + 1.0D, this.getZ() + 1.0D), Entity::isAlive);
 			for(Entity entity : livingEntitiesNear) {
 				if(entity instanceof LivingEntity) {
 					if(entity != this.getOwner()) {
@@ -91,7 +97,15 @@ public class Glacius extends DamageSpell {
 											int id = 10;
 											int spelllevel = h.getSpellsLevel()[id];
 											float damage = HarryPotterMod.spellCooldownOrDamage(id, spelllevel, true);
-											entity.hurt(new IndirectEntityDamageSource("frozen", entity1, entity1).setProjectile(), damage);
+
+											//entity.hurt(new IndirectEntityDamageSource("frozen", entity1, entity1).setProjectile(), damage);
+
+											Holder<DamageType> damageType = entity.level().registryAccess()
+													.registryOrThrow(Registries.DAMAGE_TYPE)
+													.getHolderOrThrow(ResourceKey.create(Registries.DAMAGE_TYPE, instantdeath));
+											DamageSource source = new DamageSource(damageType);
+											entity.hurt(source, damage);
+
 										});
 									}
 								}else {
@@ -99,7 +113,14 @@ public class Glacius extends DamageSpell {
 										int id = 10;
 										int spelllevel = h.getSpellsLevel()[id];
 										float damage = HarryPotterMod.spellCooldownOrDamage(id, spelllevel, true);
-										entity.hurt(new IndirectEntityDamageSource("frozen", entity1, entity1).setProjectile(), damage);
+										//entity.hurt(new IndirectEntityDamageSource("frozen", entity1, entity1).setProjectile(), damage);
+
+										Holder<DamageType> damageType = entity.level().registryAccess()
+												.registryOrThrow(Registries.DAMAGE_TYPE)
+												.getHolderOrThrow(ResourceKey.create(Registries.DAMAGE_TYPE, instantdeath));
+										DamageSource source = new DamageSource(damageType);
+										entity.hurt(source, damage);
+
 									});
 								}
 							}
@@ -114,7 +135,7 @@ public class Glacius extends DamageSpell {
 		}else {
 			foundTarget  = true;
 			if (this.tickCount % 200 == 0 ) {
-				if (!this.level.isClientSide ) {
+				if (!this.level().isClientSide ) {
 					this.discard();
 				}
 			}
@@ -130,7 +151,7 @@ public class Glacius extends DamageSpell {
 	
 	@Override
 	protected void onHitBlock(BlockHitResult p_37258_) {
-		if (this.level.isClientSide) {
+		if (this.level().isClientSide) {
 		Vec3 vec3 = this.getDeltaMovement();
          double d0 = this.getX() + vec3.x;
          double d1 = this.getY() + vec3.y;
@@ -138,7 +159,7 @@ public class Glacius extends DamageSpell {
          
             for(int i = 0; i < 10; ++i) {
                float f1 =  i* 0.05F;
-               this.level.addParticle(this.getTrailParticle(), d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1, vec3.x, vec3.y, vec3.z);
+               this.level().addParticle(this.getTrailParticle(), d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1, vec3.x, vec3.y, vec3.z);
             }
 		}
 		
@@ -148,7 +169,7 @@ public class Glacius extends DamageSpell {
 	protected void onHitEntity(EntityHitResult p_37386_) {
 		super.onHitEntity(p_37386_);
 
-		if (this.level.isClientSide) {
+		if (this.level().isClientSide) {
 		Vec3 vec3 = this.getDeltaMovement();
          double d0 = this.getX() + vec3.x;
          double d1 = this.getY() + vec3.y;
@@ -156,8 +177,8 @@ public class Glacius extends DamageSpell {
 
             for(int i = 0; i < 10; ++i) {
                float f1 =  i* 0.05F;
-               this.level.addParticle(ParticleTypes.SNOWFLAKE, d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1, vec3.x, vec3.y, vec3.z);
-               this.level.addParticle(this.getTrailParticle(), d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1, vec3.x, vec3.y, vec3.z);
+               this.level().addParticle(ParticleTypes.SNOWFLAKE, d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1, vec3.x, vec3.y, vec3.z);
+               this.level().addParticle(this.getTrailParticle(), d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1, vec3.x, vec3.y, vec3.z);
             }
 		}
 	}

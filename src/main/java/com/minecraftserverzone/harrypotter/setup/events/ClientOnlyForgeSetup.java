@@ -51,7 +51,7 @@ public class ClientOnlyForgeSetup {
 	 
 	@SubscribeEvent
 	public static void changeCapabilityOfPlayers(PlayerTickEvent event) {
-		if(event.phase == Phase.END && event.player.level.isClientSide()) {
+		if(event.phase == Phase.END && event.player.level().isClientSide()) {
 
 		Player player = event.player;
 		if(player instanceof LocalPlayer) {
@@ -143,7 +143,7 @@ public class ClientOnlyForgeSetup {
 
 	@SubscribeEvent
     public static void onItemUse(PlayerInteractEvent.RightClickItem event) {
-		if(event.getEntity().level.isClientSide && (event.getEntity().getMainHandItem().is(Registrations.MARAUDERS_MAP.get()) || event.getEntity().getOffhandItem().is(Registrations.MARAUDERS_MAP.get()))) {
+		if(event.getEntity().level().isClientSide && (event.getEntity().getMainHandItem().is(Registrations.MARAUDERS_MAP.get()) || event.getEntity().getOffhandItem().is(Registrations.MARAUDERS_MAP.get()))) {
 		    Minecraft.getInstance().setScreen(new MaraudersMap());
 		}
 	}

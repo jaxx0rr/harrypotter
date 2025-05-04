@@ -52,17 +52,17 @@ public class Finite extends DamageSpell {
 		for(float i = -1; i < 2; ++i) {
         	for(float j = -1; j < 2; ++j) {
         		for(float k = -1; k < 2; ++k) {
-        			this.level.addParticle(this.getTrailParticle(), d0 - vec3.x + i/10, 0.15f +  d1 - vec3.y + j/10, d2 - vec3.z + k/10, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
+        			this.level().addParticle(this.getTrailParticle(), d0 - vec3.x + i/10, 0.15f +  d1 - vec3.y + j/10, d2 - vec3.z + k/10, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
         		}
         	}
         }
-		List<Entity> entitiesNear = this.level.getEntities(this, new AABB(this.getX() - 2.0D, this.getY() - 2.0D, this.getZ() - 2.0D, this.getX() + 2.0D, this.getY() + 2.0D, this.getZ() + 2.0D), Entity::isAlive);
+		List<Entity> entitiesNear = this.level().getEntities(this, new AABB(this.getX() - 2.0D, this.getY() - 2.0D, this.getZ() - 2.0D, this.getX() + 2.0D, this.getY() + 2.0D, this.getZ() + 2.0D), Entity::isAlive);
 		for(Entity entity : entitiesNear) {
 			if(entity instanceof PullSpell || entity instanceof DamageSpell ||
 					entity instanceof WaterSpell || entity instanceof NormalBallTypeSpell ||
 					entity instanceof IceEntity || entity instanceof BodyMoverEntity) {
 
-		        this.level.addParticle(ParticleTypes.EXPLOSION, d0 - vec3.x, 0.15f +  d1 - vec3.y, d2 - vec3.z, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
+		        this.level().addParticle(ParticleTypes.EXPLOSION, d0 - vec3.x, 0.15f +  d1 - vec3.y, d2 - vec3.z, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
 				entity.discard();
 				this.discard();
 			}
@@ -84,7 +84,7 @@ public class Finite extends DamageSpell {
 	protected void onHitEntity(EntityHitResult p_37386_) {
 		super.onHitEntity(p_37386_);
 		
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			if(p_37386_.getEntity() instanceof PullSpell || p_37386_.getEntity() instanceof DamageSpell ||
 					p_37386_.getEntity() instanceof WaterSpell || p_37386_.getEntity() instanceof NormalBallTypeSpell ||
 					p_37386_.getEntity() instanceof IceEntity || p_37386_.getEntity() instanceof BodyMoverEntity) {
@@ -96,7 +96,7 @@ public class Finite extends DamageSpell {
         double d0 = this.getX() + vec3.x;
         double d1 = this.getY() + vec3.y;
         double d2 = this.getZ() + vec3.z;
-        this.level.addParticle(ParticleTypes.EXPLOSION, d0 - vec3.x, 0.15f +  d1 - vec3.y, d2 - vec3.z, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
+        this.level().addParticle(ParticleTypes.EXPLOSION, d0 - vec3.x, 0.15f +  d1 - vec3.y, d2 - vec3.z, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
 	}
 	
 	@Override
@@ -112,7 +112,7 @@ public class Finite extends DamageSpell {
 
 	protected void onHit(HitResult p_37388_) {
 		super.onHit(p_37388_);
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			this.discard();
 		}
 	}

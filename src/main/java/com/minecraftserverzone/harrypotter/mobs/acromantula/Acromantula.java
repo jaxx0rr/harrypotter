@@ -134,9 +134,9 @@ public class Acromantula extends Spider {
       if (super.doHurtTarget(p_32257_)) {
          if (p_32257_ instanceof LivingEntity) {
             int i = 0;
-            if (this.level.getDifficulty() == Difficulty.NORMAL) {
+            if (this.level().getDifficulty() == Difficulty.NORMAL) {
                i = 7;
-            } else if (this.level.getDifficulty() == Difficulty.HARD) {
+            } else if (this.level().getDifficulty() == Difficulty.HARD) {
                i = 15;
             }
 

@@ -65,14 +65,14 @@ public class Reparo extends PullSpell {
         int j = Mth.floor(this.getY() - (double)0.2F);
         int k = Mth.floor(this.getZ());
         BlockPos pos = new BlockPos(i, j, k);
-        BlockState blockstate = this.level.getBlockState(pos);
+        BlockState blockstate = this.level().getBlockState(pos);
 
 		return new BlockParticleOption(ParticleTypes.BLOCK, blockstate);
 	}
 
 	protected void onHit(HitResult p_37388_) {
 		super.onHit(p_37388_);
-		List<ItemEntity> itemEntitiesNear = this.level.getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(2D, 2D, 2D));
+		List<ItemEntity> itemEntitiesNear = this.level().getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(2D, 2D, 2D));
 		for(ItemEntity itementity : itemEntitiesNear) {
             if (!itementity.isRemoved() && !itementity.getItem().isEmpty() && !itementity.hasPickUpDelay()) {
                if(itementity.getItem().isDamageableItem()) {
@@ -85,7 +85,7 @@ public class Reparo extends PullSpell {
             }
          }
 		
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			this.discard();
 		}
 

@@ -33,7 +33,7 @@ public class ForgeSetup {
 	public static void damageEvent(LivingDamageEvent event) {
 		if(event.getEntity().getVehicle() != null) {
 			if(event.getEntity().getVehicle() instanceof BroomStick) {
-				if(event.getSource() == DamageSource.FALL) {
+				if(event.getSource() == event.getEntity().level().damageSources().fall()) {
 					event.setAmount(0);
 				}
 			}
@@ -42,7 +42,7 @@ public class ForgeSetup {
 		
 	@SubscribeEvent
 	public static void changeCapabilityOfPlayers(PlayerTickEvent event) {
-		if(event.phase == Phase.END && !event.player.level.isClientSide() && event.player.tickCount % 10 == 0) {
+		if(event.phase == Phase.END && !event.player.level().isClientSide() && event.player.tickCount % 10 == 0) {
 			Player player = event.player;
 			player.getCapability(PlayerStatsProvider.PLAYER_STATS_CAPABILITY).ifPresent(h -> {
 				int[] allSpellCooldown = new int[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};

@@ -36,13 +36,13 @@ public class AquaEructoRenderer extends EntityRenderer<AquaEructo> {
       p_115376_.pushPose();
       p_115376_.translate(0.0D, (double)-1.15F, 0.0D);
 
-      List<Entity> livingEntitiesNear = p_115373_.level.getEntities(p_115373_, new AABB(p_115373_.getX() - 2.0D, p_115373_.getY() - 2.0D, p_115373_.getZ() - 2.0D, p_115373_.getX() + 3.0D, p_115373_.getY() + 2.0D, p_115373_.getZ() + 2.0D), Entity::isAlive);
+      List<Entity> livingEntitiesNear = p_115373_.level().getEntities(p_115373_, new AABB(p_115373_.getX() - 2.0D, p_115373_.getY() - 2.0D, p_115373_.getZ() - 2.0D, p_115373_.getX() + 3.0D, p_115373_.getY() + 2.0D, p_115373_.getZ() + 2.0D), Entity::isAlive);
 		for(Entity entity : livingEntitiesNear) {
 			if(entity instanceof AquaEructo) {
 				AquaEructo livingentity = (AquaEructo) entity;
 		         if (livingentity != null ) {
 			         float f = 0.5f;
-			         float f1 = (float)p_115373_.level.getGameTime() + p_115375_;
+			         float f1 = (float)p_115373_.level().getGameTime() + p_115375_;
 			         float f2 = f1 * 0.5F % 1.0F;
 			         float f3 = p_115373_.getEyeHeight();
 			         p_115376_.pushPose();

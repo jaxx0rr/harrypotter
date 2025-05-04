@@ -5,13 +5,9 @@
 
 package com.minecraftserverzone.harrypotter.setup;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.minecraftserverzone.harrypotter.HarryPotterMod;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.resources.ResourceLocation;
@@ -22,6 +18,10 @@ import net.minecraftforge.common.world.ModifiableBiomeInfo.BiomeInfo.Builder;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.List;
 
 @Mod.EventBusSubscriber(modid = HarryPotterMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class BiomeModifierTest
@@ -78,13 +78,15 @@ public class BiomeModifierTest
         }
     }*/
 
+    /*
+    //orig
     public static record TestModifier(HolderSet<Biome> biomes, SpawnerData spawn) implements BiomeModifier {
         private static final RegistryObject<Codec<? extends BiomeModifier>> SERIALIZER = RegistryObject.create(ADD_FEATURES_TO_BIOMES_RL, ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, MODID);
 
         @Override
         public void modify(Holder<Biome> biome, Phase phase, Builder builder) {
             if (phase == Phase.ADD && this.biomes.contains(biome)) {
-            	builder.getMobSpawnSettings().addSpawn(this.spawn.type.getCategory(), this.spawn);
+                builder.getMobSpawnSettings().addSpawn(this.spawn.type.getCategory(), this.spawn);
             }
         }
 
@@ -96,8 +98,63 @@ public class BiomeModifierTest
         public static Codec<TestModifier> makeCodec() {
             return RecordCodecBuilder.create(builder -> builder.group(
                     Biome.LIST_CODEC.fieldOf("biomes").forGetter(TestModifier::biomes),
+                    SpawnerData.CODEC.fieldOf("spawners").forGetter(TestModifier::spawn)
+            ).apply(builder, TestModifier::new));
+        }
+    }
+    */
+
+    /*
+    //chatgpt v1
+    public static record TestModifier(HolderSet<Biome> biomes, SpawnerData spawn) implements BiomeModifier {
+
+
+        @Override
+        public void modify(Holder<Biome> biome, Phase phase, Builder builder) {
+            if (phase == Phase.ADD && this.biomes.contains(biome)) {
+                builder.getMobSpawnSettings().addSpawn(this.spawn.type.getCategory(), this.spawn);
+            }
+        }
+
+        @Override
+        public Codec<? extends BiomeModifier> codec() {
+            return Registrations.HARRY_POTTER_SPAWNS.get();
+        }
+
+        public static Codec<TestModifier> makeCodec() {
+            return RecordCodecBuilder.create(instance -> instance.group(
+                    Biome.LIST_CODEC.fieldOf("biomes").forGetter(TestModifier::biomes),
                     SpawnerData.CODEC.fieldOf("spawn").forGetter(TestModifier::spawn)
-                    ).apply(builder, TestModifier::new));
+            ).apply(instance, TestModifier::new));
+        }
+
+    }
+    */
+
+    //chatgpt v2
+    public static record TestModifier(HolderSet<Biome> biomes, List<SpawnerData> spawners) implements BiomeModifier {
+        private static final RegistryObject<Codec<? extends BiomeModifier>> SERIALIZER =
+                RegistryObject.create(ADD_FEATURES_TO_BIOMES_RL, ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, MODID);
+
+        @Override
+        public void modify(Holder<Biome> biome, Phase phase, Builder builder) {
+            if (phase == Phase.ADD && this.biomes.contains(biome)) {
+                for (SpawnerData spawn : spawners) {
+                    builder.getMobSpawnSettings().addSpawn(spawn.type.getCategory(), spawn);
+                }
+            }
+        }
+
+        @Override
+        public Codec<? extends BiomeModifier> codec() {
+            return SERIALIZER.get();
+        }
+
+        public static Codec<TestModifier> makeCodec() {
+            return RecordCodecBuilder.create(builder -> builder.group(
+                    Biome.LIST_CODEC.fieldOf("biomes").forGetter(TestModifier::biomes),
+                    SpawnerData.CODEC.listOf().fieldOf("spawners").forGetter(TestModifier::spawners)
+            ).apply(builder, TestModifier::new));
         }
     }
 }

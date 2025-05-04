@@ -37,7 +37,7 @@ public class PacketData {
 	public void handle(Supplier<NetworkEvent.Context> ctx) {
 	    ctx.get().enqueueWork(() -> {
 	        ServerPlayer sender = ctx.get().getSender(); 
-	 			if (!sender.level.isClientSide) {
+	 			if (!sender.level().isClientSide) {
 	 				sender.getCapability(PlayerStatsProvider.PLAYER_STATS_CAPABILITY).ifPresent(h -> {
 	 					if(spells!=null && spellSlot != -1) {
 	 						int spelllevelcost =  h.getSpellsLevel() != null ?  h.getSpellsLevel()[spellSlot] == 0 ? 1 : h.getSpellsLevel()[spellSlot] : 1;
@@ -47,7 +47,7 @@ public class PacketData {
 		 						h.setSpellLevel(h.getSpellsLevel()[spellSlot]+1, spellSlot);
 
 		 						/** send data to all client when client login **/
-			 					for(Player sp : ctx.get().getSender().level.players()) {
+			 					for(Player sp : ctx.get().getSender().level().players()) {
 			 						Networking.sendToClient(new PacketDataForAll(spellSlot, h.getSpellsLevel(), sender.getUUID()), (ServerPlayer) sp);
 			 					}
 	 						}
@@ -72,7 +72,7 @@ public class PacketData {
 //		 					}
 		 					
 		 					/** send player data to client when player is near **/
-		 					for(Player sp : ctx.get().getSender().level.players()) {
+		 					for(Player sp : ctx.get().getSender().level().players()) {
 		 						if(uuid.equals(sp.getUUID())) {
 		 							sp.getCapability(PlayerStatsProvider.PLAYER_STATS_CAPABILITY).ifPresent(h2 -> {
 		 								int[] allSpell2 = new int[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};

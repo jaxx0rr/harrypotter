@@ -37,17 +37,17 @@ public class IceEntity extends Projectile {
 		this.noPhysics = true;
 		
 		if(this.tickCount % 2 == 0) {
-			this.level.addParticle(ParticleTypes.SNOWFLAKE, this.getX(), this.getY() + 1, this.getZ(), ((double)this.random.nextFloat() - 0.5D) * 0.08D, ((double)this.random.nextFloat() - 0.5D) * 0.08D, ((double)this.random.nextFloat() - 0.5D) * 0.08D);
+			this.level().addParticle(ParticleTypes.SNOWFLAKE, this.getX(), this.getY() + 1, this.getZ(), ((double)this.random.nextFloat() - 0.5D) * 0.08D, ((double)this.random.nextFloat() - 0.5D) * 0.08D, ((double)this.random.nextFloat() - 0.5D) * 0.08D);
 		}
 		
-			if (!this.level.isClientSide ) {
+			if (!this.level().isClientSide ) {
 				if(this.getOwner() != null) {
 					if(this.getOwner() instanceof LivingEntity) {
 						this.startRiding(this.getOwner());
 					}
 					
 					if (this.tickCount > 100 && this.getOwner().getTicksFrozen()==0) {
-						if (!this.level.isClientSide ) {
+						if (!this.level().isClientSide ) {
 							this.discard();
 						}
 					}

@@ -93,7 +93,7 @@ public class Troll extends Monster {
    @Override
    public void tick() {
       super.tick();
-      if (!this.level.isClientSide) {
+      if (!this.level().isClientSide) {
          
       }
       if (this.attackAnimationTick > 0) {
@@ -155,7 +155,7 @@ public class Troll extends Monster {
 @Override
 	public boolean doHurtTarget(Entity p_21372_) {
 		this.attackAnimationTick = 10;
-	    this.level.broadcastEntityEvent(this, (byte)4);
+	    this.level().broadcastEntityEvent(this, (byte)4);
 	    p_21372_.setDeltaMovement(p_21372_.getDeltaMovement().add(0.0D, (double)0.4F, 0.0D));
 		return super.doHurtTarget(p_21372_);
 	}

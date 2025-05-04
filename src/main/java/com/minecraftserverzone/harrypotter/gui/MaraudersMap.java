@@ -2,6 +2,7 @@ package com.minecraftserverzone.harrypotter.gui;
 
 import java.util.List;
 
+import net.minecraft.client.gui.GuiGraphics;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -22,6 +23,8 @@ import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 
+import static com.minecraftserverzone.harrypotter.setup.HelperFunctions.blit;
+
 public class MaraudersMap extends Screen{
 	public static final ResourceLocation MAP = new ResourceLocation(HarryPotterMod.MODID, "textures/gui/marauders_map.png");
 
@@ -29,8 +32,7 @@ public class MaraudersMap extends Screen{
 		super(Component.translatable("screen.harrypotter.maraudersmap"));
 	}
 
-	@Override
-	public void render(PoseStack p_96562_, int p_96563_, int p_96564_, float p_96565_) {
+	public void render(GuiGraphics guiGraphics, int p_96563_, int p_96564_, float p_96565_) {
 		try {
 			Minecraft minecraft = Minecraft.getInstance();
 			Player player = minecraft.player;
@@ -40,16 +42,16 @@ public class MaraudersMap extends Screen{
 
 			//render function like in ForgeInGameGui
 			minecraft.getProfiler().push("marauders_map");
-			p_96562_.pushPose();
+			guiGraphics.pose().pushPose();
 			RenderSystem.setShaderTexture(0, MAP);
 
-			p_96562_.pushPose();
+			guiGraphics.pose().pushPose();
 			//abc from window size
 			//base if rotation is 0
 			
 			
 			
-				this.blit(p_96562_, screenWidth/2 - 66, l, 0, 50, 132, 132);
+				blit(guiGraphics, MAP, screenWidth/2 - 66, l, 0, 50, 132, 132);
 				int k2 = FastColor.ARGB32.color(255, 10, 4, 10);
 				int p2 = FastColor.ARGB32.color(255, 252, 119, 3);
 				
@@ -58,7 +60,7 @@ public class MaraudersMap extends Screen{
 				int playerx = screenWidth/2;
 				int playerz = l + 66;
 				
-				List<Entity> livingEntitiesNear = player.level.getEntities(player, new AABB(player.getX() - 43.0D, player.getY() - 20.0D, player.getZ() - 43.0D, player.getX() + 43.0D, player.getY() + 20.0D, player.getZ() + 43.0D), Entity::isAlive);
+				List<Entity> livingEntitiesNear = player.level().getEntities(player, new AABB(player.getX() - 43.0D, player.getY() - 20.0D, player.getZ() - 43.0D, player.getX() + 43.0D, player.getY() + 20.0D, player.getZ() + 43.0D), Entity::isAlive);
 				for(Entity entity : livingEntitiesNear) {
 					int posx = (int) (player.getX()*1.05f - entity.getX()*1.05f);
 					int posz = (int) (player.getZ()*1.05f - entity.getZ()*1.05f);
@@ -93,16 +95,16 @@ public class MaraudersMap extends Screen{
 					int translatex = (int) (c - c2);
 					int translatey = (int) (b - b2);
 					
-					p_96562_.pushPose();
-					p_96562_.translate(translatex, translatey, 0);
-					p_96562_.mulPose(Axis.ZP.rotationDegrees((float) playerYrotation));
+					guiGraphics.pose().pushPose();
+					guiGraphics.pose().translate(translatex, translatey, 0);
+					guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees((float) playerYrotation));
 
-						this.blit(p_96562_, playerx + posx - 4, playerz + posz - 3, 0, 187, 9, 7);
-						p_96562_.popPose();
+						blit(guiGraphics, MAP,playerx + posx - 4, playerz + posz - 3, 0, 187, 9, 7);
+						guiGraphics.pose().popPose();
 //						GuiComponent.fill(p_96562_, playerx + posx - 2, playerz + posz - 2, playerx + posx + 2, playerz + posz + 2, enemyDot);
 				}
 
-				p_96562_.popPose();
+				guiGraphics.pose().popPose();
 				
 				double playerYrotation = player.getRotationVector().y;
 				double b = this.height/2; //y center of the map
@@ -125,18 +127,20 @@ public class MaraudersMap extends Screen{
 				int translatey = (int) (b - b2);
 				int translatez = 0;
 				
-				p_96562_.translate(translatex, translatey, translatez);
-				p_96562_.mulPose(Axis.ZP.rotationDegrees((float) playerYrotation));
+				guiGraphics.pose().translate(translatex, translatey, translatez);
+				guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees((float) playerYrotation));
 
-				this.blit(p_96562_, playerx - 4, playerz - 3, 0, 180, 9, 7);
+				blit(guiGraphics, MAP, playerx - 4, playerz - 3, 0, 180, 9, 7);
+
 //			GuiComponent.fill(p_96562_, playerx - 2, playerz - 2, playerx + 2, playerz + 2, k2);
 //			GuiComponent.fill(p_96562_, playerx - 2, playerz - 5, playerx + 2, playerz - 2, p2);
-			p_96562_.popPose();
+
+			guiGraphics.pose().popPose();
 			RenderSystem.disableBlend();
 			minecraft.getProfiler().pop();
-		}catch (Exception e) {}
+		} catch (Exception e) {}
 
-		super.render(p_96562_, p_96563_, p_96564_, p_96565_);
+		super.render(guiGraphics, p_96563_, p_96564_, p_96565_);
 	}
 
 	public static void rotateAroundPivot(PoseStack poseStack, Vector3f pivot, Vector3f axis, float angle, boolean degrees)

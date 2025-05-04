@@ -52,7 +52,7 @@ public class PatronusDeer extends Animal {
    @Override
 	public void tick() {
 		super.tick();
-		   List<Entity> livingEntitiesNear = this.level.getEntities(this, new AABB(this.getX() - 10.0D, this.getY() - 10.0D, this.getZ() - 10.0D, this.getX() + 10.0D, this.getY() + 10.0D, this.getZ() + 10.0D), Entity::isAlive);
+		   List<Entity> livingEntitiesNear = this.level().getEntities(this, new AABB(this.getX() - 10.0D, this.getY() - 10.0D, this.getZ() - 10.0D, this.getX() + 10.0D, this.getY() + 10.0D, this.getZ() + 10.0D), Entity::isAlive);
 			for(Entity entity : livingEntitiesNear) {
 				if(entity instanceof LivingEntity) {
 					if(((LivingEntity)entity).getMobType() == MobType.UNDEAD) {
@@ -61,8 +61,8 @@ public class PatronusDeer extends Animal {
 				}
 			}
 			
-			if(!this.level.isClientSide && tickCount > 200) {
-				this.level.addParticle(ParticleTypes.POOF, this.getX() + ((double)this.random.nextFloat() - 0.5D) * (double)this.getBbWidth(), this.getY() + 0.1D, this.getZ() + ((double)this.random.nextFloat() - 0.5D) * (double)this.getBbWidth(), 4.0D * ((double)this.random.nextFloat() - 0.5D), 0.5D, ((double)this.random.nextFloat() - 0.5D) * 4.0D);
+			if(!this.level().isClientSide && tickCount > 200) {
+				this.level().addParticle(ParticleTypes.POOF, this.getX() + ((double)this.random.nextFloat() - 0.5D) * (double)this.getBbWidth(), this.getY() + 0.1D, this.getZ() + ((double)this.random.nextFloat() - 0.5D) * (double)this.getBbWidth(), 4.0D * ((double)this.random.nextFloat() - 0.5D), 0.5D, ((double)this.random.nextFloat() - 0.5D) * 4.0D);
 				this.discard();
 			}
 	}

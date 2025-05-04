@@ -44,7 +44,7 @@ public class AlarteAscandare extends DamageSpell {
 		for(float i = -1; i < 2; ++i) {
         	for(float j = -1; j < 2; ++j) {
         		for(float k = -1; k < 2; ++k) {
-        			this.level.addParticle(this.getTrailParticle(), d0 - vec3.x + i/10, 0.15f +  d1 - vec3.y + j/10, d2 - vec3.z + k/10, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
+        			this.level().addParticle(this.getTrailParticle(), d0 - vec3.x + i/10, 0.15f +  d1 - vec3.y + j/10, d2 - vec3.z + k/10, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
         		}
         	}
         }
@@ -65,7 +65,7 @@ public class AlarteAscandare extends DamageSpell {
 	protected void onHitEntity(EntityHitResult p_37386_) {
 		super.onHitEntity(p_37386_);
 
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			if(p_37386_.getEntity() instanceof LivingEntity) {
 				LivingEntity livingEntity = (LivingEntity) p_37386_.getEntity();
 				if(p_37386_.getEntity() instanceof BroomStick && ((LivingEntity) p_37386_.getEntity()).getFirstPassenger() != null && this.getOwner() != null) {
@@ -93,7 +93,7 @@ public class AlarteAscandare extends DamageSpell {
 
 	protected void onHit(HitResult p_37388_) {
 		super.onHit(p_37388_);
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			this.discard();
 		}
 	}

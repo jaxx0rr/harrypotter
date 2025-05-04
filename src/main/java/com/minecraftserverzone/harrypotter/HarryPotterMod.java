@@ -1,5 +1,7 @@
 package com.minecraftserverzone.harrypotter;
 
+import com.minecraftserverzone.harrypotter.setup.events.ModSetup;
+import net.minecraftforge.eventbus.api.IEventBus;
 import org.slf4j.Logger;
 
 import com.minecraftserverzone.harrypotter.setup.Registrations;
@@ -134,14 +136,22 @@ public class HarryPotterMod
     }
 
     public HarryPotterMod() {
+
         Registrations.init();
+
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigHolder.CLIENT_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHolder.COMMON_SPEC);
         ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> "", (a, b) -> true));
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-//        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, Structures::addDimensionalSpacing);
-//        MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, Structures::setupStructureSpawns);
+
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+
+		//TODO
+		ModSetup.register(FMLJavaModLoadingContext.get().getModEventBus());
+
+//      MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, Structures::addDimensionalSpacing);
+//      MinecraftForge.EVENT_BUS.addListener(EventPriority.NORMAL, Structures::setupStructureSpawns);
         MinecraftForge.EVENT_BUS.register(this);
+
     }
 
     private void setup(final FMLCommonSetupEvent event)
@@ -154,6 +164,7 @@ public class HarryPotterMod
     private void registerThings() {
 //    	Structures.setupStructures();
 //    	Structures.registerConfiguredStructures();
+
     }
 	
     

@@ -1,5 +1,10 @@
 package com.minecraftserverzone.harrypotter.spells.sectumsempra;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageType;
 import org.joml.Vector3f;
 
 import com.minecraftserverzone.harrypotter.HarryPotterMod;
@@ -10,7 +15,6 @@ import com.minecraftserverzone.harrypotter.spells.DamageSpell;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.IndirectEntityDamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,6 +25,9 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 public class Sectumsempra extends DamageSpell {
+
+	ResourceLocation instantdeath = new ResourceLocation("harrypotter", "instantdeath");
+
 	public Sectumsempra(EntityType<? extends Sectumsempra> p_37364_, Level p_37365_) {
 		super(p_37364_, p_37365_);
 	}
@@ -45,7 +52,7 @@ public class Sectumsempra extends DamageSpell {
 		for(float i = -1; i < 2; ++i) {
         	for(float j = -1; j < 2; ++j) {
         		for(float k = -1; k < 2; ++k) {
-        			this.level.addParticle(this.getTrailParticle(), d0 - vec3.x + i/10, 0.15f +  d1 - vec3.y + j/10, d2 - vec3.z + k/10, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
+        			this.level().addParticle(this.getTrailParticle(), d0 - vec3.x + i/10, 0.15f +  d1 - vec3.y + j/10, d2 - vec3.z + k/10, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
         		}
         	}
         }
@@ -64,7 +71,7 @@ public class Sectumsempra extends DamageSpell {
 
 	protected void onHitEntity(EntityHitResult p_37386_) {
 		super.onHitEntity(p_37386_);
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			Entity entity = p_37386_.getEntity();
 				Entity entity1 = this.getOwner();
 				if(this.getOwner() != null) {
@@ -73,7 +80,13 @@ public class Sectumsempra extends DamageSpell {
 							int id = 17;
 							int spelllevel = h.getSpellsLevel()[id];
 							float damage = HarryPotterMod.spellCooldownOrDamage(id, spelllevel, true);
-							entity.hurt(new IndirectEntityDamageSource("sectumSempra", entity1, entity1).setProjectile(), damage);
+							//entity.hurt(new IndirectEntityDamageSource("sectumSempra", entity1, entity1).setProjectile(), damage);
+
+							Holder<DamageType> damageType = entity.level().registryAccess()
+									.registryOrThrow(Registries.DAMAGE_TYPE)
+									.getHolderOrThrow(ResourceKey.create(Registries.DAMAGE_TYPE, instantdeath));
+							DamageSource source = new DamageSource(damageType);
+							entity.hurt(source, damage);
 						});
 					}
 				}
@@ -93,7 +106,7 @@ public class Sectumsempra extends DamageSpell {
 
 	protected void onHit(HitResult p_37388_) {
 		super.onHit(p_37388_);
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			this.discard();
 		}
 

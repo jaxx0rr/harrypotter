@@ -111,7 +111,7 @@ public class DeathEater extends Monster implements RangedAttackMob{
    @Override
    public void tick() {
       super.tick();
-      if (!this.level.isClientSide) {
+      if (!this.level().isClientSide) {
     	  if(this.getMainHandItem().isEmpty() && tickCount % 100 == 0) {
         	  this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Registrations.APPRENTICE_WAND.get()));
           }
@@ -189,7 +189,7 @@ public class DeathEater extends Monster implements RangedAttackMob{
 @Override
 	public boolean doHurtTarget(Entity p_21372_) {
 		this.attackAnimationTick = 10;
-	    this.level.broadcastEntityEvent(this, (byte)4);
+	    this.level().broadcastEntityEvent(this, (byte)4);
 		return super.doHurtTarget(p_21372_);
 	}
 
@@ -325,7 +325,7 @@ public class DeathEater extends Monster implements RangedAttackMob{
 	         if (livingentity != null) {
 	            double d0 = 64.0D;
 	            if (livingentity.distanceToSqr(this.DeathEater) < 4096.0D && this.DeathEater.hasLineOfSight(livingentity)) {
-	               Level level = this.DeathEater.level;
+	               Level level = this.DeathEater.level();
 	               Vec3 look = this.DeathEater.getLookAngle();
 	               ++this.chargeTime;
 	               if (this.chargeTime == 10 && !this.DeathEater.isSilent()) {
@@ -382,7 +382,7 @@ public class DeathEater extends Monster implements RangedAttackMob{
        if (livingentity != null) {
     	   if(!this.getMainHandItem().isEmpty()) {
     		   this.attackAnimationTick = 10;
-    		   this.level.broadcastEntityEvent(this, (byte)4);
+    		   this.level().broadcastEntityEvent(this, (byte)4);
     		   
     		   Vec3 vec3 = this.getViewVector(1.0F);
                double d2 = livingentity.getX() - (this.getX() + vec3.x * 4.0D);
@@ -391,25 +391,25 @@ public class DeathEater extends Monster implements RangedAttackMob{
                
         	   int rand = new Random().nextInt(5);
                if(rand == 0) {
-             	  Sectumsempra sectumsempra = new Sectumsempra(level, this, d2, d3, d4);
+             	  Sectumsempra sectumsempra = new Sectumsempra(level(), this, d2, d3, d4);
              	  sectumsempra.setPos(this.getX() + vec3.x * 1.0D, this.getY(0.5D) + 0.5D, sectumsempra.getZ() + vec3.z * 1.0D);
-                     level.addFreshEntity(sectumsempra);
+                     level().addFreshEntity(sectumsempra);
                }else if(rand == 1) {
-             	  Depulso depulso = new Depulso(level, this, d2, d3, d4);
+             	  Depulso depulso = new Depulso(level(), this, d2, d3, d4);
              	  depulso.setPos(this.getX() + vec3.x * 1.0D, this.getY(0.5D) + 0.5D, depulso.getZ() + vec3.z * 1.0D);
-                     level.addFreshEntity(depulso);
+                     level().addFreshEntity(depulso);
                }else if(rand == 2) {
-             	  Incendio incendio = new Incendio(level, this, d2, d3, d4);
+             	  Incendio incendio = new Incendio(level(), this, d2, d3, d4);
              	  incendio.setPos(this.getX() + vec3.x * 1.0D, this.getY(0.5D) + 0.5D, incendio.getZ() + vec3.z * 1.0D);
-                     level.addFreshEntity(incendio);
+                     level().addFreshEntity(incendio);
                }else if(rand == 3) {
-             	  Confringo confringo = new Confringo(level, this, d2, d3, d4);
+             	  Confringo confringo = new Confringo(level(), this, d2, d3, d4);
              	  confringo.setPos(this.getX() + vec3.x * 1.0D, this.getY(0.5D) + 0.5D, confringo.getZ() + vec3.z * 1.0D);
-                     level.addFreshEntity(confringo);
+                     level().addFreshEntity(confringo);
                }else {
-             	  Glacius glacius = new Glacius(level, this, d2, d3, d4);
+             	  Glacius glacius = new Glacius(level(), this, d2, d3, d4);
              	  glacius.setPos(this.getX() + vec3.x * 1.0D, this.getY(0.5D) + 0.5D, glacius.getZ() + vec3.z * 1.0D);
-                     level.addFreshEntity(glacius);
+                     level().addFreshEntity(glacius);
                }
     	   }
        }

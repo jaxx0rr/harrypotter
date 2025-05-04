@@ -8,8 +8,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.ItemTransforms.TransformType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -31,8 +29,8 @@ public class ApprenticeWandRenderer extends BlockEntityWithoutLevelRenderer{
 	    this.apprenticewand = new ApprenticeWandModel(this.entityModelSet.bakeLayer(ApprenticeWandModel.LAYER_LOCATION));
 	}
 
-	@Override
-	public void renderByItem(ItemStack p_108830_, TransformType p_108831_, PoseStack p_108832_,
+
+	public void renderByItem(ItemStack p_108830_, PoseStack p_108832_,
 			MultiBufferSource p_108833_, int p_108834_, int p_108835_) {
 	    	  if (p_108830_.is(Registrations.APPRENTICE_WAND.get())) {
 	              p_108832_.pushPose();

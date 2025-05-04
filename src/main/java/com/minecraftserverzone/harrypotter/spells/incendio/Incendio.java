@@ -1,5 +1,10 @@
 package com.minecraftserverzone.harrypotter.spells.incendio;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageType;
 import org.joml.Vector3f;
 
 import com.minecraftserverzone.harrypotter.HarryPotterMod;
@@ -12,7 +17,6 @@ import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.IndirectEntityDamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,6 +28,8 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 public class Incendio extends DamageSpell {
+
+	ResourceLocation instantdeath = new ResourceLocation("harrypotter", "instantdeath");
 
 	public Incendio(EntityType<? extends Incendio> p_37364_, Level p_37365_) {
 		super(p_37364_, p_37365_);
@@ -49,8 +55,8 @@ public class Incendio extends DamageSpell {
 		for(float i = -1; i < 2; ++i) {
         	for(float j = -1; j < 2; ++j) {
         		for(float k = -1; k < 2; ++k) {
-        			this.level.addParticle(ParticleTypes.SMOKE, d0 - vec3.x + i/10, d1 - vec3.y + j/10, d2 - vec3.z + k/10, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
-        			this.level.addParticle(this.getTrailParticle(), d0 - vec3.x + i/10, d1 - vec3.y + j/10, d2 - vec3.z + k/10, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
+        			this.level().addParticle(ParticleTypes.SMOKE, d0 - vec3.x + i/10, d1 - vec3.y + j/10, d2 - vec3.z + k/10, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
+        			this.level().addParticle(this.getTrailParticle(), d0 - vec3.x + i/10, d1 - vec3.y + j/10, d2 - vec3.z + k/10, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
         		}
         	}
         }
@@ -64,7 +70,7 @@ public class Incendio extends DamageSpell {
 	
 	@Override
 	protected void onHitBlock(BlockHitResult p_37258_) {
-		if (this.level.isClientSide) {
+		if (this.level().isClientSide) {
 		Vec3 vec3 = this.getDeltaMovement();
          double d0 = this.getX() + vec3.x;
          double d1 = this.getY() + vec3.y;
@@ -72,15 +78,15 @@ public class Incendio extends DamageSpell {
          
             for(int i = 0; i < 10; ++i) {
                float f1 =  i* 0.05F;
-               this.level.addParticle(this.getTrailParticle(), d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1, vec3.x, vec3.y, vec3.z);
+               this.level().addParticle(this.getTrailParticle(), d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1, vec3.x, vec3.y, vec3.z);
             }
 		}
 		
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			//put fire on block
 		      BlockPos blockpos = p_37258_.getBlockPos().relative(p_37258_.getDirection());
-	            if (this.level.isEmptyBlock(blockpos)) {
-	               this.level.setBlockAndUpdate(blockpos, BaseFireBlock.getState(this.level, blockpos));
+	            if (this.level().isEmptyBlock(blockpos)) {
+	               this.level().setBlockAndUpdate(blockpos, BaseFireBlock.getState(this.level(), blockpos));
 	            }
 		}
 		super.onHitBlock(p_37258_);
@@ -89,7 +95,7 @@ public class Incendio extends DamageSpell {
 	protected void onHitEntity(EntityHitResult p_37386_) {
 		super.onHitEntity(p_37386_);
 		
-		if (this.level.isClientSide) {
+		if (this.level().isClientSide) {
 		Vec3 vec3 = this.getDeltaMovement();
          double d0 = this.getX() + vec3.x;
          double d1 = this.getY() + vec3.y;
@@ -97,11 +103,11 @@ public class Incendio extends DamageSpell {
          
             for(int i = 0; i < 10; ++i) {
                float f1 =  i* 0.05F;
-               this.level.addParticle(this.getTrailParticle(), d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1, vec3.x, vec3.y, vec3.z);
+               this.level().addParticle(this.getTrailParticle(), d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1, vec3.x, vec3.y, vec3.z);
             }
 		}
 		
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 				//fire on entity				
 				Entity entity = p_37386_.getEntity();
 			    Entity entity1 = this.getOwner();
@@ -111,7 +117,15 @@ public class Incendio extends DamageSpell {
 							int id = 12;
 							int spelllevel = h.getSpellsLevel()[id];
 							float damage = HarryPotterMod.spellCooldownOrDamage(id, spelllevel, true);
-							entity.hurt(new IndirectEntityDamageSource("onFire", entity1, entity1).setProjectile(), damage);
+							//entity.hurt(new IndirectEntityDamageSource("onFire", entity1, entity1).setProjectile(), damage);
+
+							Holder<DamageType> damageType = entity.level().registryAccess()
+									.registryOrThrow(Registries.DAMAGE_TYPE)
+									.getHolderOrThrow(ResourceKey.create(Registries.DAMAGE_TYPE, instantdeath));
+							DamageSource source = new DamageSource(damageType);
+
+							entity.hurt(source, damage);
+
 						});
 					}
 				}
@@ -136,7 +150,7 @@ public class Incendio extends DamageSpell {
 
 	protected void onHit(HitResult p_37388_) {
 		super.onHit(p_37388_);
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			this.discard();
 		}
 

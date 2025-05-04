@@ -1,5 +1,11 @@
 package com.minecraftserverzone.harrypotter.spells.fire_storm;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.level.ClipContext;
 import org.joml.Vector3f;
 
 import com.minecraftserverzone.harrypotter.HarryPotterMod;
@@ -13,7 +19,6 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.IndirectEntityDamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -34,7 +39,9 @@ public class FireStorm extends Projectile {
     private float clockwise;
     BlockPos anchorPoint = BlockPos.ZERO;
 	Vec3 moveTargetPoint = Vec3.ZERO;
-     
+
+	ResourceLocation on_fire = new ResourceLocation("harrypotter", "on_fire");
+
 	public FireStorm(EntityType<? extends FireStorm> p_37364_, Level p_37365_) {
 		super(p_37364_, p_37365_);
 		this.distance = 6.0F;
@@ -80,15 +87,44 @@ public class FireStorm extends Projectile {
 		}
 
         Entity entity = this.getOwner();
-        if (this.level.isClientSide || (entity == null || !entity.isRemoved()) && this.level.hasChunkAt(this.blockPosition())) {
+        if (this.level().isClientSide || (entity == null || !entity.isRemoved()) && this.level().hasChunkAt(this.blockPosition())) {
 			 if (this.shouldBurn()) {
 		            this.setSecondsOnFire(1);
 		         }
-			 HitResult hitresult = ProjectileUtil.getHitResult(this, this::canHitEntity);
+/*
+			 	HitResult hitresult = ProjectileUtil.getHitResult(this, this::canHitEntity);
+
 		        if (hitresult.getType() != HitResult.Type.MISS && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
 		           this.onHit(hitresult);
 		        }
-		        
+*/
+
+				Vec3 start = this.position();
+				Vec3 end = start.add(this.getDeltaMovement());
+
+				// 1. Check block collision
+				HitResult blockHit = this.level().clip(new ClipContext(
+						start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+
+				// 2. Check entity collision
+				EntityHitResult entityHit = ProjectileUtil.getEntityHitResult(this.level(), this, start, end,
+						this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D),
+						this::canHitEntity);
+
+				// 3. Choose the closer one
+				HitResult finalHit = entityHit != null &&
+						start.distanceToSqr(entityHit.getLocation()) < start.distanceToSqr(blockHit.getLocation())
+						? entityHit
+						: blockHit;
+
+				// 4. Apply impact
+				if (finalHit.getType() != HitResult.Type.MISS &&
+						!net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, finalHit)) {
+					this.onHit(finalHit);
+				}
+
+
+
 		        this.checkInsideBlocks();
 		         Vec3 vec3 = this.getDeltaMovement();
 		         double d0 = this.getX() + vec3.x;
@@ -99,14 +135,14 @@ public class FireStorm extends Projectile {
 		         if (this.isInWater()) {
 		            for(int i = 0; i < 4; ++i) {
 		               float f1 = 0.25F;
-		               this.level.addParticle(ParticleTypes.BUBBLE, d0 - vec3.x * 0.25D, d1 - vec3.y * 0.25D, d2 - vec3.z * 0.25D, vec3.x, vec3.y, vec3.z);
+		               this.level().addParticle(ParticleTypes.BUBBLE, d0 - vec3.x * 0.25D, d1 - vec3.y * 0.25D, d2 - vec3.z * 0.25D, vec3.x, vec3.y, vec3.z);
 		            }
 
 		            f = 0.8F;
 		         }
 	         
-//		        this.level.addParticle(ParticleTypes.SMOKE, d0 - vec3.x, d1 - vec3.y, d2 - vec3.z, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
-//      			this.level.addParticle(this.getTrailParticle(), d0 - vec3.x, d1 - vec3.y, d2 - vec3.z, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
+//		        	this.level().addParticle(ParticleTypes.SMOKE, d0 - vec3.x, d1 - vec3.y, d2 - vec3.z, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
+//      			this.level().addParticle(this.getTrailParticle(), d0 - vec3.x, d1 - vec3.y, d2 - vec3.z, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
       		
 	    }
 
@@ -127,7 +163,7 @@ public class FireStorm extends Projectile {
         	 this.discard();
          }
 
-         if(!this.level.isClientSide && this.tickCount > 600) {
+         if(!this.level().isClientSide && this.tickCount > 600) {
         	 this.discard();
          }
 		
@@ -183,7 +219,7 @@ public class FireStorm extends Projectile {
 	
 	@Override
 	protected void onHitBlock(BlockHitResult p_37258_) {
-		if (this.level.isClientSide) {
+		if (this.level().isClientSide) {
 		Vec3 vec3 = this.getDeltaMovement();
          double d0 = this.getX() + vec3.x;
          double d1 = this.getY() + vec3.y;
@@ -191,20 +227,20 @@ public class FireStorm extends Projectile {
          
             for(int i = 0; i < 10; ++i) {
                float f1 =  i* 0.05F;
-               this.level.addParticle(this.getTrailParticle(), d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1, vec3.x, vec3.y, vec3.z);
+               this.level().addParticle(this.getTrailParticle(), d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1, vec3.x, vec3.y, vec3.z);
             }
 		}
 
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			//put fire on block
 		      BlockPos blockpos = p_37258_.getBlockPos().relative(p_37258_.getDirection());
-	            if (this.level.isEmptyBlock(blockpos)) {
-	               this.level.setBlockAndUpdate(blockpos, BaseFireBlock.getState(this.level, blockpos));
+	            if (this.level().isEmptyBlock(blockpos)) {
+	               this.level().setBlockAndUpdate(blockpos, BaseFireBlock.getState(this.level(), blockpos));
 	            }
 		}
 		super.onHitBlock(p_37258_);
 		
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			this.discard();
 		}
 	}
@@ -218,7 +254,7 @@ public class FireStorm extends Projectile {
 			if(p_37386_.getEntity() instanceof BroomStick && ((LivingEntity) p_37386_.getEntity()).getFirstPassenger() != null) {
 				if(((LivingEntity) p_37386_.getEntity()).getFirstPassenger() != this.getOwner()) {
 					super.onHitEntity(p_37386_);
-					if (!this.level.isClientSide) {
+					if (!this.level().isClientSide) {
 							//fire on entity				
 							Entity entity = p_37386_.getEntity();
 						    Entity entity1 = this.getOwner();
@@ -228,7 +264,15 @@ public class FireStorm extends Projectile {
 										int id = 24;
 										int spelllevel = h.getSpellsLevel()[id];
 										float damage = HarryPotterMod.spellCooldownOrDamage(id, spelllevel, true);
-										entity.hurt(new IndirectEntityDamageSource("onFire", entity1, entity1).setProjectile(), damage);
+
+										//entity.hurt(new IndirectEntityDamageSource("onFire", entity1, entity1).setProjectile(), damage);
+
+										Holder<DamageType> damageType = entity.level().registryAccess()
+												.registryOrThrow(Registries.DAMAGE_TYPE)
+												.getHolderOrThrow(ResourceKey.create(Registries.DAMAGE_TYPE, on_fire));
+										DamageSource source = new DamageSource(damageType);
+										entity.hurt(source, damage);
+
 									});
 								}
 							}
@@ -237,13 +281,13 @@ public class FireStorm extends Projectile {
 						    	this.doEnchantDamageEffects((LivingEntity)entity1, entity);
 						    }
 						}
-						if (!this.level.isClientSide) {
+						if (!this.level().isClientSide) {
 							this.discard();
 						}
 				}
 			}else {
 				super.onHitEntity(p_37386_);
-				if (!this.level.isClientSide) {
+				if (!this.level().isClientSide) {
 						//fire on entity				
 						Entity entity = p_37386_.getEntity();
 					    Entity entity1 = this.getOwner();
@@ -253,7 +297,13 @@ public class FireStorm extends Projectile {
 									int id = 24;
 									int spelllevel = h.getSpellsLevel()[id];
 									float damage = HarryPotterMod.spellCooldownOrDamage(id, spelllevel, true);
-									entity.hurt(new IndirectEntityDamageSource("onFire", entity1, entity1).setProjectile(), damage);
+									//entity.hurt(new IndirectEntityDamageSource("onFire", entity1, entity1).setProjectile(), damage);
+
+									Holder<DamageType> damageType = entity.level().registryAccess()
+											.registryOrThrow(Registries.DAMAGE_TYPE)
+											.getHolderOrThrow(ResourceKey.create(Registries.DAMAGE_TYPE, on_fire));
+									DamageSource source = new DamageSource(damageType);
+									entity.hurt(source, damage);
 								});
 							}
 						}
@@ -262,7 +312,7 @@ public class FireStorm extends Projectile {
 					    	this.doEnchantDamageEffects((LivingEntity)entity1, entity);
 					    }
 					}
-					if (!this.level.isClientSide) {
+					if (!this.level().isClientSide) {
 						this.discard();
 					}
 			}

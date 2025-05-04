@@ -56,10 +56,10 @@ import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.levelgen.structure.StructureType;
-import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.common.world.BiomeModifier;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -68,8 +68,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class Registrations {
-    
-    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, HarryPotterMod.MODID);
+
+	public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, HarryPotterMod.MODID);
 	public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, HarryPotterMod.MODID);
 	public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, HarryPotterMod.MODID);
 	public static final DeferredRegister<SoundEvent> SOUNDS  = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, HarryPotterMod.MODID);
@@ -78,19 +78,23 @@ public class Registrations {
 	private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, HarryPotterMod.MODID);
 	private static final DeferredRegister<StructureType<?>> STRUCTURES = DeferredRegister.create(Registries.STRUCTURE_TYPE, HarryPotterMod.MODID);
 	public static final DeferredRegister<Codec<? extends BiomeModifier>> SPAWNS = DeferredRegister.create(ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, HarryPotterMod.MODID);
-	
+
+	public static final RegistryObject<Codec<TestModifier>> HARRY_POTTER_SPAWNS =
+			SPAWNS.register("harry_potter_spawns", TestModifier::makeCodec);
+
 	public static void init() {
 		BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
-		ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());	
+		ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
 		PARTICLE_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
-		SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());	
+		SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
 		ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
 		EFFECTS.register(FMLJavaModLoadingContext.get().getModEventBus());
 		BLOCK_ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
 		STRUCTURES.register(FMLJavaModLoadingContext.get().getModEventBus());
-		SPAWNS.register(FMLJavaModLoadingContext.get().getModEventBus());	
+		SPAWNS.register(FMLJavaModLoadingContext.get().getModEventBus());
+
 		//spawns
-		SPAWNS.register("harry_potter_spawns", TestModifier::makeCodec);
+		//SPAWNS.register("harry_potter_spawns", TestModifier::makeCodec);
 	}
 
 	//structures
@@ -151,7 +155,7 @@ public class Registrations {
 	
 	//blocks
 	public static final RegistryObject<Block> GLOWING_AIR = BLOCKS.register("lumos", ()-> 
-	new Lumos(BlockBehaviour.Properties.of(Material.AIR)
+	new Lumos(BlockBehaviour.Properties.copy(Blocks.AIR)
 			.noCollission()
 			.randomTicks()
 			.air()

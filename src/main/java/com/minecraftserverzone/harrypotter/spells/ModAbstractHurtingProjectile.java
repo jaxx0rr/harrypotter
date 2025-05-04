@@ -13,9 +13,11 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -69,16 +71,43 @@ public abstract class ModAbstractHurtingProjectile extends Projectile {
    @SuppressWarnings("deprecation")
 public void tick() {
       Entity entity = this.getOwner();
-      if (this.level.isClientSide || (entity == null || !entity.isRemoved()) && this.level.hasChunkAt(this.blockPosition())) {
+      if (this.level().isClientSide || (entity == null || !entity.isRemoved()) && this.level().hasChunkAt(this.blockPosition())) {
          super.tick();
          if (this.shouldBurn()) {
             this.setSecondsOnFire(0);
          }
 
+         /*
          HitResult hitresult = ProjectileUtil.getHitResult(this, this::canHitEntity);
          if (hitresult.getType() != HitResult.Type.MISS && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hitresult)) {
             this.onHit(hitresult);
          }
+         */
+
+         Vec3 start = this.position();
+         Vec3 end = start.add(this.getDeltaMovement());
+
+         // 1. Check block collision
+         HitResult blockHit = this.level().clip(new ClipContext(
+                 start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
+
+         // 2. Check entity collision
+         EntityHitResult entityHit = ProjectileUtil.getEntityHitResult(this.level(), this, start, end,
+                 this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D),
+                 this::canHitEntity);
+
+         // 3. Choose the closer one
+         HitResult finalHit = entityHit != null &&
+                 start.distanceToSqr(entityHit.getLocation()) < start.distanceToSqr(blockHit.getLocation())
+                 ? entityHit
+                 : blockHit;
+
+         // 4. Apply impact
+         if (finalHit.getType() != HitResult.Type.MISS &&
+                 !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, finalHit)) {
+            this.onHit(finalHit);
+         }
+
 
          this.checkInsideBlocks();
          Vec3 vec3 = this.getDeltaMovement();
@@ -90,23 +119,23 @@ public void tick() {
          
          if (this.isInWater()) {
             for(int i = 0; i < 4; ++i) {
-               this.level.addParticle(ParticleTypes.BUBBLE, d0 - vec3.x * 0.25D, d1 - vec3.y * 0.25D, d2 - vec3.z * 0.25D, vec3.x, vec3.y, vec3.z);
+               this.level().addParticle(ParticleTypes.BUBBLE, d0 - vec3.x * 0.25D, d1 - vec3.y * 0.25D, d2 - vec3.z * 0.25D, vec3.x, vec3.y, vec3.z);
             }
 
             this.discard();
          }
          
          if (this.isInLava()) {
-        	 if (!this.level.isClientSide) {
- 				level.setBlock(this.blockPosition(), Blocks.WATER.defaultBlockState(), 3);
- 			    level.gameEvent(this, GameEvent.BLOCK_PLACE, this.blockPosition());
+        	 if (!this.level().isClientSide) {
+ 				level().setBlock(this.blockPosition(), Blocks.WATER.defaultBlockState(), 3);
+ 			    level().gameEvent(this, GameEvent.BLOCK_PLACE, this.blockPosition());
  	         this.discard();
         	 }
           }
          Vec3 vec31 = this.getDeltaMovement();
          this.setDeltaMovement(vec31.x, vec31.y - 0.03f, vec31.z);
 //         this.setDeltaMovement(vec3.add(this.xPower, this.yPower, this.zPower).scale((double)f));
-         this.level.addParticle(this.getTrailParticle(), d0, d1 + 0.5D, d2, 0.0D, 0.0D, 0.0D);
+         this.level().addParticle(this.getTrailParticle(), d0, d1 + 0.5D, d2, 0.0D, 0.0D, 0.0D);
          this.setPos(d0, d1, d2);
       } else {
          this.discard();

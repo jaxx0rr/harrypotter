@@ -211,7 +211,7 @@ public class WandItem extends Item{
 		LivingEntity target = p_41400_;
 		
 		/** TODO test if it works right: heal only player if no target */
-		if(player.level.isClientSide) {
+		if(player.level().isClientSide) {
 			player.getCapability(PlayerStatsProvider.PLAYER_STATS_CAPABILITY).ifPresent(h -> {
 				String[] hotbar = HarryPotterModConfig.HOTBAR.get().split(";");
 				int selectedSkillInHotbar = Integer.parseInt(hotbar[h.getSelectedHotbar()]);
@@ -316,7 +316,7 @@ public class WandItem extends Item{
 						
 					}
 						
-						return InteractionResult.sidedSuccess(p_40637_.getPlayer().level.isClientSide);
+						return InteractionResult.sidedSuccess(p_40637_.getPlayer().level().isClientSide);
 						
 		   }
 	
@@ -444,7 +444,10 @@ public class WandItem extends Item{
 	            double d6 = (double)p_40640_.getX() + d5 + random.nextDouble() * d0 * 2.0D;
 	            double d7 = (double)p_40640_.getY() + random.nextDouble() * d1;
 	            double d8 = (double)p_40640_.getZ() + d5 + random.nextDouble() * d0 * 2.0D;
-	            if (!p_40639_.getBlockState((new BlockPos(d6, d7, d8)).below()).isAir()) {
+	            if (!p_40639_.getBlockState((new BlockPos(
+						(int) Math.floor(d6),
+						(int) Math.floor(d7),
+						(int) Math.floor(d8))).below()).isAir()) {
 	               p_40639_.addParticle(ParticleTypes.HAPPY_VILLAGER, d6, d7, d8, d2, d3, d4);
 	            }
 	         }

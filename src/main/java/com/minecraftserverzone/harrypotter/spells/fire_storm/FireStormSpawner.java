@@ -31,7 +31,7 @@ public class FireStormSpawner extends ThrowableItemProjectile {
    public void handleEntityEvent(byte p_37484_) {
       if (p_37484_ == 3) {
          for(int i = 0; i < 1; ++i) {
-            this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY() + 1, this.getZ(), ((double)this.random.nextFloat() - 0.5D) * 0.08D, ((double)this.random.nextFloat() - 0.5D) * 0.08D, ((double)this.random.nextFloat() - 0.5D) * 0.08D);
+            this.level().addParticle(ParticleTypes.SMOKE, this.getX(), this.getY() + 1, this.getZ(), ((double)this.random.nextFloat() - 0.5D) * 0.08D, ((double)this.random.nextFloat() - 0.5D) * 0.08D, ((double)this.random.nextFloat() - 0.5D) * 0.08D);
          }
       }
    }
@@ -39,13 +39,13 @@ public class FireStormSpawner extends ThrowableItemProjectile {
    @Override
 	public void tick() {
 	   if (this.tickCount % 1200 == 0 && this.tickCount != 0) {
-			if (!this.level.isClientSide ) {
+			if (!this.level().isClientSide ) {
 				this.discard();
 			}
 		}
 	   
 		this.setPos(this.getOwner().getX(), this.getOwner().getY(), this.getOwner().getZ());
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 
 		    Entity entity1 = this.getOwner();
 		    if(this.getOwner() != null) {
@@ -61,16 +61,16 @@ public class FireStormSpawner extends ThrowableItemProjectile {
 				}
 			}
 			
-			 this.level.broadcastEntityEvent(this, (byte)3);
+			 this.level().broadcastEntityEvent(this, (byte)3);
 			//spawn fire storm
 			 this.getOwner().getCapability(PlayerStatsProvider.PLAYER_STATS_CAPABILITY).ifPresent(h -> {
 					if(h.getUsingSkill() == 1) {
 						Vec3 look = this.getOwner().getLookAngle();
 						
-						FireStorm fire_storm = new FireStorm(this.getOwner(), this.getOwner().level);
+						FireStorm fire_storm = new FireStorm(this.getOwner(), this.getOwner().level());
 						fire_storm.setPos((this.getOwner().getX()) + look.x * 1.5D, this.getOwner().getY() + 1 + look.y * 1.5D, this.getOwner().getZ() + look.z * 1.5D);
 						fire_storm.setOwner(this.getOwner());
-						this.getOwner().level.addFreshEntity(fire_storm);
+						this.getOwner().level().addFreshEntity(fire_storm);
 
 			 			
 					}else {

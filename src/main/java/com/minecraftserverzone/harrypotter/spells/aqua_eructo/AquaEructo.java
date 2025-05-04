@@ -53,13 +53,13 @@ public class AquaEructo extends WaterSpell {
 	
 	@Override
 	protected void onHitBlock(BlockHitResult p_37258_) {
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			
 			BlockPos blockpos = p_37258_.getBlockPos().relative(p_37258_.getDirection());
 
-			if (this.level.getBlockState(blockpos).is(Blocks.FIRE)) {
+			if (this.level().getBlockState(blockpos).is(Blocks.FIRE)) {
 				// Remove fire on server
-			    level.removeBlock(blockpos, false);
+			    level().removeBlock(blockpos, false);
 	        }
 			
 			if(this.getOwner() != null) {
@@ -69,8 +69,8 @@ public class AquaEructo extends WaterSpell {
 						int spelllevel = h.getSpellsLevel()[1];
 						
 						if(random <= HarryPotterMod.spellCooldownOrDamage(1, spelllevel, true)) {
-							level.setBlock(p_37258_.getBlockPos().above(1), Blocks.WATER.defaultBlockState(), 3);
-						    level.gameEvent(this, GameEvent.BLOCK_PLACE, p_37258_.getBlockPos().above(1));
+							level().setBlock(p_37258_.getBlockPos().above(1), Blocks.WATER.defaultBlockState(), 3);
+						    level().gameEvent(this, GameEvent.BLOCK_PLACE, p_37258_.getBlockPos().above(1));
 						}
 					});
 				}
@@ -82,7 +82,7 @@ public class AquaEructo extends WaterSpell {
 
 	protected void onHitEntity(EntityHitResult p_37386_) {
 		super.onHitEntity(p_37386_);
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			Entity entity = p_37386_.getEntity();
   			BlockPos blockpos = new BlockPos(p_37386_.getEntity().blockPosition());
 
@@ -97,9 +97,9 @@ public class AquaEructo extends WaterSpell {
 						float random = new Random().nextFloat(100);
 						int spelllevel = h.getSpellsLevel()[1];
 						if(random <= HarryPotterMod.spellCooldownOrDamage(1, spelllevel, true)) {
-							if((level.getBlockState(blockpos).getBlock()) == Blocks.AIR) {
-				  				level.setBlock(blockpos, Blocks.WATER.defaultBlockState(), 3);
-				  				level.gameEvent(p_37386_.getEntity(), GameEvent.BLOCK_PLACE, blockpos);
+							if((level().getBlockState(blockpos).getBlock()) == Blocks.AIR) {
+				  				level().setBlock(blockpos, Blocks.WATER.defaultBlockState(), 3);
+				  				level().gameEvent(p_37386_.getEntity(), GameEvent.BLOCK_PLACE, blockpos);
 				  			}
 						}
 					});
@@ -121,7 +121,7 @@ public class AquaEructo extends WaterSpell {
 
 	protected void onHit(HitResult p_37388_) {
 		super.onHit(p_37388_);
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 //			if(this.tickCount % 10 == 0) {
 //				this.playSound(SoundEvents.GENERIC_SPLASH, 1.0F, 1.0F);
 //			}

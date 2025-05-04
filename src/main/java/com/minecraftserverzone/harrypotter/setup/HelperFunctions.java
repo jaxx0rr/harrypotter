@@ -4,6 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,9 +29,15 @@ public class HelperFunctions {
         }
         return !(squareDistance > 400.0f);
     }
-	
-	/** blit function for drawing **/
-	public static void blit(PoseStack matrixStack, int x, int y, int uOffset, int vOffset, int uWidth, int vHeight) {
+
+
+/*
+	public static void blit2(PoseStack matrixStack, int x, int y, int uOffset, int vOffset, int uWidth, int vHeight) {
 	      Gui.blit(matrixStack, x, y, 0, (float)uOffset, (float)vOffset, uWidth, vHeight, 256, 256);
 	}
+*/
+    /** blit function for drawing **/
+    public static void blit(GuiGraphics guiGraphics, ResourceLocation texture, int x, int y, int uOffset, int vOffset, int uWidth, int vHeight) {
+        guiGraphics.blit(texture, x, y, uOffset, vOffset, uWidth, vHeight);
+    }
 }

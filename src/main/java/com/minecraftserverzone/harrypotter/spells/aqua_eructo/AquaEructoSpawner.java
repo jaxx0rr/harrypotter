@@ -30,7 +30,7 @@ public class AquaEructoSpawner extends ThrowableItemProjectile {
    public void handleEntityEvent(byte p_37484_) {
       if (p_37484_ == 3) {
          for(int i = 0; i < 1; ++i) {
-            this.level.addParticle(ParticleTypes.BUBBLE_COLUMN_UP, this.getX(), this.getY() + 1, this.getZ(), ((double)this.random.nextFloat() - 0.5D) * 0.08D, ((double)this.random.nextFloat() - 0.5D) * 0.08D, ((double)this.random.nextFloat() - 0.5D) * 0.08D);
+            this.level().addParticle(ParticleTypes.BUBBLE_COLUMN_UP, this.getX(), this.getY() + 1, this.getZ(), ((double)this.random.nextFloat() - 0.5D) * 0.08D, ((double)this.random.nextFloat() - 0.5D) * 0.08D, ((double)this.random.nextFloat() - 0.5D) * 0.08D);
          }
       }
    }
@@ -38,7 +38,7 @@ public class AquaEructoSpawner extends ThrowableItemProjectile {
    @Override
 	public void tick() {
 	   if (this.tickCount % 1000 == 0 ) {
-			if (!this.level.isClientSide ) {
+			if (!this.level().isClientSide ) {
 				this.discard();
 			}
 		}
@@ -46,16 +46,16 @@ public class AquaEructoSpawner extends ThrowableItemProjectile {
 	   if(this.getOwner() != null) {
 		   this.setPos(this.getOwner().getX(), this.getOwner().getY(), this.getOwner().getZ());
 		   
-		   if (!this.level.isClientSide) {
-				 this.level.broadcastEntityEvent(this, (byte)3);
+		   if (!this.level().isClientSide) {
+				 this.level().broadcastEntityEvent(this, (byte)3);
 				//spawn aqua eructo
 				 this.getOwner().getCapability(PlayerStatsProvider.PLAYER_STATS_CAPABILITY).ifPresent(h -> {
 						if(h.getUsingSkill() == 1) {
 							Vec3 look = this.getOwner().getLookAngle();
-				 			AquaEructo aquaEructo3 = new AquaEructo(this.getOwner().level, this.getOwner(), look.x * 1, look.y * 1, look.z * 1);
+				 			AquaEructo aquaEructo3 = new AquaEructo(this.getOwner().level(), this.getOwner(), look.x * 1, look.y * 1, look.z * 1);
 				 			aquaEructo3.setPos((this.getOwner().getX()) + look.x * 1.5D, this.getOwner().getY() + 1 + look.y * 1.5D, this.getOwner().getZ() + look.z * 1.5D);
 				 			aquaEructo3.shootFromRotation(this.getOwner(), this.getOwner().getXRot(), this.getOwner().getYRot() + 2, 0.0F, 1F, 1.0F);
-				 			this.getOwner().level.addFreshEntity(aquaEructo3);
+				 			this.getOwner().level().addFreshEntity(aquaEructo3);
 				 			if(this.tickCount % 30 == 0) {
 				 				this.playSound(SoundEvents.WATER_AMBIENT, 1.0F, 1.0F);
 				 			}
@@ -68,7 +68,7 @@ public class AquaEructoSpawner extends ThrowableItemProjectile {
 			}
 	   }else {
 		   if(this.tickCount > 50) {
-			   if (!this.level.isClientSide) {
+			   if (!this.level().isClientSide) {
 				   this.discard();
 			   }
 		   }

@@ -36,7 +36,7 @@ public class Accio extends PullSpell {
 	
 	@Override
 	public void tick() {
-		for(ItemEntity itementity : this.level.getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(2D, 2D, 2D))) {
+		for(ItemEntity itementity : this.level().getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(2D, 2D, 2D))) {
             if (!itementity.isRemoved() && !itementity.getItem().isEmpty() && !itementity.hasPickUpDelay()) {
               
                if(this.getOwner() != null) {
@@ -61,7 +61,7 @@ public class Accio extends PullSpell {
 
 	protected void onHitEntity(EntityHitResult p_37386_) {
 		super.onHitEntity(p_37386_);
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			Entity entity = p_37386_.getEntity();
 				if(this.getOwner() != null) {
 					Entity owner = this.getOwner();
@@ -87,14 +87,14 @@ public class Accio extends PullSpell {
         int j = Mth.floor(this.getY() - (double)0.2F);
         int k = Mth.floor(this.getZ());
         BlockPos pos = new BlockPos(i, j, k);
-        BlockState blockstate = this.level.getBlockState(pos);
+        BlockState blockstate = this.level().getBlockState(pos);
 
 		return new BlockParticleOption(ParticleTypes.BLOCK, blockstate);
 	}
 
 	protected void onHit(HitResult p_37388_) {
 		super.onHit(p_37388_);
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			this.discard();
 		}
 

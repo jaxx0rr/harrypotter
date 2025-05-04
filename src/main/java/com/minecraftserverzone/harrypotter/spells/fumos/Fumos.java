@@ -37,14 +37,14 @@ public class Fumos extends NormalBallTypeSpell {
 	         double d1 = this.getY() + vec3.y;
 	         double d2 = this.getZ() + vec3.z;
 	 
-	         if(this.tickCount % 20 == 0 && !this.level.isClientSide) {
+	         if(this.tickCount % 20 == 0 && !this.level().isClientSide) {
 	        	 this.discard();
 	         } 
 	            for(int i = -2; i < 3; ++i) {
 	            	for(int j = -2; j < 3; ++j) {
 	            		for(int k = -2; k < 3; ++k) {
 	            			
-	            			this.level.addParticle(this.getTrailParticle(), d0 - vec3.x + i, 0.15f +  d1 - vec3.y + j, d2 - vec3.z + k, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
+	            			this.level().addParticle(this.getTrailParticle(), d0 - vec3.x + i, 0.15f +  d1 - vec3.y + j, d2 - vec3.z + k, vec3.x * 0.0f, vec3.y * 0.0f, vec3.z * 0.0f);
 	            		}
 	            	}
 	            }
@@ -78,7 +78,7 @@ public class Fumos extends NormalBallTypeSpell {
 
 	protected void onHit(HitResult p_37388_) {
 		super.onHit(p_37388_);
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			this.discard();
 		}
 

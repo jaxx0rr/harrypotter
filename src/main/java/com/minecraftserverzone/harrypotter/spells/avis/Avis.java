@@ -9,12 +9,16 @@ import com.minecraftserverzone.harrypotter.setup.capabilities.PlayerStatsProvide
 import com.minecraftserverzone.harrypotter.spells.NormalBallTypeSpell;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.IndirectEntityDamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -45,19 +49,21 @@ public class Avis extends NormalBallTypeSpell {
 	@Override
 	public void tick() {
 		if(this.isInWater() || this.isInLava()) {
-			if (!this.level.isClientSide) {
+			if (!this.level().isClientSide) {
 				this.discard();
 			}
 		}
 		
 		if(this.tickCount % 1000 == 0 ) {
-			if (!this.level.isClientSide ) {
+			if (!this.level().isClientSide ) {
 				this.discard();
 			}
 		}
-		
+
+		ResourceLocation instantdeath = new ResourceLocation("harrypotter", "instantdeath");
+
 		if(!this.isPassenger()) {
-			List<Entity> livingEntitiesNear = this.level.getEntities(this, new AABB(this.getX() - 1.0D, this.getY() - 1.0D, this.getZ() - 1.0D, this.getX() + 1.0D, this.getY() + 1.0D, this.getZ() + 1.0D), Entity::isAlive);
+			List<Entity> livingEntitiesNear = this.level().getEntities(this, new AABB(this.getX() - 1.0D, this.getY() - 1.0D, this.getZ() - 1.0D, this.getX() + 1.0D, this.getY() + 1.0D, this.getZ() + 1.0D), Entity::isAlive);
 			for(Entity entity : livingEntitiesNear) {
 				if(entity instanceof LivingEntity) {
 					if(entity != this.getOwner()) {
@@ -70,14 +76,30 @@ public class Avis extends NormalBallTypeSpell {
 										entity1.getCapability(PlayerStatsProvider.PLAYER_STATS_CAPABILITY).ifPresent(h -> {
 											int spelllevel = h.getSpellsLevel()[4];
 											float damage = HarryPotterMod.spellCooldownOrDamage(4, spelllevel, true);
-											entity.hurt(new IndirectEntityDamageSource("Avis", entity1, entity1).setProjectile(), damage/7f);
+											//entity.hurt(new IndirectEntityDamageSource("Avis", entity1, entity1).setProjectile(), damage/7f);
+
+											Holder<DamageType> damageType = entity.level().registryAccess()
+													.registryOrThrow(Registries.DAMAGE_TYPE)
+													.getHolderOrThrow(ResourceKey.create(Registries.DAMAGE_TYPE, instantdeath));
+											DamageSource source = new DamageSource(damageType);
+
+											entity.hurt(source, damage/7f);
+
 										});
 									}
 								}else {
 									entity1.getCapability(PlayerStatsProvider.PLAYER_STATS_CAPABILITY).ifPresent(h -> {
 										int spelllevel = h.getSpellsLevel()[4];
 										float damage = HarryPotterMod.spellCooldownOrDamage(4, spelllevel, true);
-										entity.hurt(new IndirectEntityDamageSource("Avis", entity1, entity1).setProjectile(), damage/7f);
+										//entity.hurt(new IndirectEntityDamageSource("Avis", entity1, entity1).setProjectile(), damage/7f);
+
+										Holder<DamageType> damageType = entity.level().registryAccess()
+												.registryOrThrow(Registries.DAMAGE_TYPE)
+												.getHolderOrThrow(ResourceKey.create(Registries.DAMAGE_TYPE, instantdeath));
+										DamageSource source = new DamageSource(damageType);
+
+										entity.hurt(source, damage/7f);
+
 									});
 								}
 								
@@ -104,14 +126,21 @@ public class Avis extends NormalBallTypeSpell {
 							entity1.getCapability(PlayerStatsProvider.PLAYER_STATS_CAPABILITY).ifPresent(h -> {
 								int spelllevel = h.getSpellsLevel()[4];
 								float damage = HarryPotterMod.spellCooldownOrDamage(4, spelllevel, true);
-								this.getVehicle().hurt(new IndirectEntityDamageSource("Avis", this.getVehicle(), entity1).setProjectile(), damage/7f);
+								//this.getVehicle().hurt(new IndirectEntityDamageSource("Avis", this.getVehicle(), entity1).setProjectile(), damage/7f);
+
+								Holder<DamageType> damageType = this.getVehicle().level().registryAccess()
+										.registryOrThrow(Registries.DAMAGE_TYPE)
+										.getHolderOrThrow(ResourceKey.create(Registries.DAMAGE_TYPE, instantdeath));
+								DamageSource source = new DamageSource(damageType);
+
+								this.getVehicle().hurt(source, damage/7f);
 							});
 						}
 					}
 					
 //					this.getVehicle().hurt(new IndirectEntityDamageSource("birds", this.getOwner(), entity1).setProjectile(), 1.0F);
 				}else {
-					if (!this.level.isClientSide ) {
+					if (!this.level().isClientSide ) {
 						this.discard();
 					}
 				}
@@ -119,7 +148,7 @@ public class Avis extends NormalBallTypeSpell {
 			}
 			
 			if (this.tickCount % 100 == 0 ) {
-				if (!this.level.isClientSide ) {
+				if (!this.level().isClientSide ) {
 					this.discard();
 				}
 			}
@@ -156,14 +185,14 @@ public class Avis extends NormalBallTypeSpell {
         int j = Mth.floor(this.getY() - (double)0.1F);
         int k = Mth.floor(this.getZ());
         BlockPos pos = new BlockPos(i, j, k);
-        BlockState blockstate = this.level.getBlockState(pos);
+        BlockState blockstate = this.level().getBlockState(pos);
 
 		return new BlockParticleOption(ParticleTypes.BLOCK, blockstate);
 	}
 
 	protected void onHit(HitResult p_37388_) {
 		super.onHit(p_37388_);
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 //	         this.discard();
 		}
 	}

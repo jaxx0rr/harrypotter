@@ -1,5 +1,11 @@
 package com.minecraftserverzone.harrypotter.spells.avada_kedavra;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageType;
 import org.joml.Vector3f;
 
 import com.minecraftserverzone.harrypotter.broomsticks.BroomStick;
@@ -9,7 +15,6 @@ import com.minecraftserverzone.harrypotter.spells.DamageSpell;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.IndirectEntityDamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -54,8 +59,11 @@ public class AvadaKedavra extends DamageSpell {
 	}
 
 	protected void onHitEntity(EntityHitResult p_37386_) {
+
+		ResourceLocation instantdeath = new ResourceLocation("harrypotter", "instantdeath");
+
 		super.onHitEntity(p_37386_);
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			if(this.getOwner() != null) {
 				Entity entity = p_37386_.getEntity();
 				Entity entity1 = this.getOwner();
@@ -63,11 +71,25 @@ public class AvadaKedavra extends DamageSpell {
 				if(p_37386_.getEntity() instanceof BroomStick && ((LivingEntity) p_37386_.getEntity()).getFirstPassenger() != null) {
 					if(((LivingEntity) p_37386_.getEntity()).getFirstPassenger() != entity1) {
 //						entity.hurt(DamageSource.MAGIC, 999.0F);
-					    entity.hurt(new IndirectEntityDamageSource("InstantDeath", entity1, entity1).setProjectile(), 999.0F);
+//						entity.hurt(new IndirectEntityDamageSource("InstantDeath", entity1, entity1).setProjectile(), 999.0F);
+
+						Holder<DamageType> damageType = entity.level().registryAccess()
+								.registryOrThrow(Registries.DAMAGE_TYPE)
+								.getHolderOrThrow(ResourceKey.create(Registries.DAMAGE_TYPE, instantdeath));
+						DamageSource source = new DamageSource(damageType);
+
+						entity.hurt(source, 999.0F);
 					}
 				}else {
 //					entity.hurt(DamageSource.MAGIC, 999.0F);
-				    entity.hurt(new IndirectEntityDamageSource("InstantDeath", entity1, entity1).setProjectile(), 999.0F);
+//					entity.hurt(new IndirectEntityDamageSource("InstantDeath", entity1, entity1).setProjectile(), 999.0F);
+
+					Holder<DamageType> damageType = entity.level().registryAccess()
+							.registryOrThrow(Registries.DAMAGE_TYPE)
+							.getHolderOrThrow(ResourceKey.create(Registries.DAMAGE_TYPE, instantdeath));
+					DamageSource source = new DamageSource(damageType);
+
+					entity.hurt(source, 999.0F);
 				}
 				if (entity1 instanceof LivingEntity) {
 			    	this.doEnchantDamageEffects((LivingEntity)entity1, entity);
@@ -103,7 +125,7 @@ public class AvadaKedavra extends DamageSpell {
 
 	protected void onHit(HitResult p_37388_) {
 		super.onHit(p_37388_);
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			this.discard();
 		}
 

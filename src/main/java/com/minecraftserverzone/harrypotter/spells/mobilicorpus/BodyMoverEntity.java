@@ -38,7 +38,7 @@ public class BodyMoverEntity extends Projectile {
 	@Override
 	public void tick() {
 		
-//			if (!this.level.isClientSide ) {
+//			if (!this.level().isClientSide ) {
 				if(this.getOwner() != null) {
 					if(this.getOwner() instanceof LivingEntity) {
 						if(this.getFirstPassenger() != null) {
@@ -54,25 +54,25 @@ public class BodyMoverEntity extends Projectile {
 								ownerViewVector[2] = this.getOwner().getLookAngle().z;
 							}
 
-							if(this.level.getBlockState(this.blockPosition().offset(this.getOwner().getLookAngle().x, 0, 0)).getBlock() == Blocks.AIR) {
+							if(this.level().getBlockState(this.blockPosition().offset((int) this.getOwner().getLookAngle().x, 0, 0)).getBlock() == Blocks.AIR) {
 								this.setPos(this.position().add(this.getOwner().getLookAngle().x/4, 0, 0));
 							}
 							
-							if(this.level.getBlockState(this.blockPosition().offset(this.getOwner().getLookAngle().z, 0, 0)).getBlock() == Blocks.AIR) {
+							if(this.level().getBlockState(this.blockPosition().offset((int) this.getOwner().getLookAngle().z, 0, 0)).getBlock() == Blocks.AIR) {
 								this.setPos(this.position().add(0, 0, this.getOwner().getLookAngle().z/4));
 							}
 							
 							//y
-							if(this.getOwner().getLookAngle().y < 0 && this.level.getBlockState(this.getFirstPassenger().blockPosition().below()).getBlock() == Blocks.AIR) {
+							if(this.getOwner().getLookAngle().y < 0 && this.level().getBlockState(this.getFirstPassenger().blockPosition().below()).getBlock() == Blocks.AIR) {
 								this.setPos(this.getX(), this.getY()+this.getOwner().getLookAngle().y/5, this.getZ());
 							}
 							
-							if(this.getOwner().getLookAngle().y > 0 && this.level.getBlockState(this.getFirstPassenger().blockPosition().above()).getBlock() == Blocks.AIR) {
+							if(this.getOwner().getLookAngle().y > 0 && this.level().getBlockState(this.getFirstPassenger().blockPosition().above()).getBlock() == Blocks.AIR) {
 								this.setPos(this.getX(), this.getY()+this.getOwner().getLookAngle().y/5, this.getZ());
 							}
 
 						}else {
-							if (!this.level.isClientSide && this.tickCount > 50) {
+							if (!this.level().isClientSide && this.tickCount > 50) {
 								this.discard();
 							}
 						}
@@ -81,12 +81,12 @@ public class BodyMoverEntity extends Projectile {
 
 					
 					if (this.tickCount > 200) {
-						if (!this.level.isClientSide ) {
+						if (!this.level().isClientSide ) {
 							this.discard();
 						}
 					}
 				}else {
-					if (!this.level.isClientSide && this.tickCount > 50) {
+					if (!this.level().isClientSide && this.tickCount > 50) {
 						this.discard();
 					}
 				}

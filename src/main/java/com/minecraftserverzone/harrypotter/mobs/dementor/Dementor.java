@@ -270,7 +270,7 @@ public class Dementor extends Monster {
 
          for(int i = 0; i < 3; ++i) {
             BlockPos blockpos1 = blockpos.offset(Dementor.this.random.nextInt(15) - 7, Dementor.this.random.nextInt(11) - 5, Dementor.this.random.nextInt(15) - 7);
-            if (Dementor.this.level.isEmptyBlock(blockpos1)) {
+            if (Dementor.this.level().isEmptyBlock(blockpos1)) {
                Dementor.this.moveControl.setWantedPosition((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 0.25D);
                if (Dementor.this.getTarget() == null) {
                   Dementor.this.getLookControl().setLookAt((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 180.0F, 20.0F);

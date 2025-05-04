@@ -151,7 +151,7 @@ public class Inferius extends Monster {
 
    public void setBaby(boolean p_34309_) {
       this.getEntityData().set(DATA_BABY_ID, p_34309_);
-      if (this.level != null && !this.level.isClientSide) {
+      if (this.level() != null && !this.level().isClientSide) {
          AttributeInstance attributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
          attributeinstance.removeModifier(SPEED_MODIFIER_BABY);
          if (p_34309_) {
@@ -182,7 +182,7 @@ public class Inferius extends Monster {
    public boolean doHurtTarget(Entity p_34276_) {
       boolean flag = super.doHurtTarget(p_34276_);
       if (flag) {
-         float f = this.level.getCurrentDifficultyAt(this.blockPosition()).getEffectiveDifficulty();
+         float f = this.level().getCurrentDifficultyAt(this.blockPosition()).getEffectiveDifficulty();
          if (this.getMainHandItem().isEmpty() && this.isOnFire() && this.random.nextFloat() < f * 0.3F) {
             p_34276_.setSecondsOnFire(2 * (int)f);
          }

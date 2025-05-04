@@ -28,6 +28,7 @@ public class GuiMinimap extends Screen{
 	}
 
 	public static void renderMinimap(float p_93010_, PoseStack p_96562_, Gui gui, Minecraft minecraft) {
+		/*
 		try {
 			minecraft = Minecraft.getInstance();
 			Player player = minecraft.player;
@@ -107,5 +108,7 @@ public class GuiMinimap extends Screen{
 			RenderSystem.disableBlend();
 			minecraft.getProfiler().pop();
 		}catch (Exception e) {}
+
+		 */
 	}
 }

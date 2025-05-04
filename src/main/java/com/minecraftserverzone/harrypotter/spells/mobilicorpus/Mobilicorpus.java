@@ -37,7 +37,7 @@ public class Mobilicorpus extends DamageSpell {
 	@Override
 	public void tick() {
 		if (this.tickCount % 600 == 0 ) {
-			if (!this.level.isClientSide ) {
+			if (!this.level().isClientSide ) {
 				this.discard();
 			}
 		}
@@ -59,7 +59,7 @@ public class Mobilicorpus extends DamageSpell {
 		super.onHitEntity(p_37386_);
 
 
-		if (this.level.isClientSide) {
+		if (this.level().isClientSide) {
 		Vec3 vec3 = this.getDeltaMovement();
          double d0 = this.getX() + vec3.x;
          double d1 = this.getY() + vec3.y;
@@ -67,12 +67,12 @@ public class Mobilicorpus extends DamageSpell {
 
             for(int i = 0; i < 10; ++i) {
                float f1 =  i* 0.05F;
-               this.level.addParticle(this.getTrailParticle(), d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1, vec3.x, vec3.y, vec3.z);
+               this.level().addParticle(this.getTrailParticle(), d0 - vec3.x * f1, d1 - vec3.y * f1, d2 - vec3.z * f1, vec3.x, vec3.y, vec3.z);
             }
 		}
 
 		
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			Entity entity = p_37386_.getEntity();
 				//spawn ice entity around the target
 				//the target of the ice entity = entity
@@ -80,16 +80,16 @@ public class Mobilicorpus extends DamageSpell {
 					
 					if(entity instanceof BroomStick && ((LivingEntity) entity).getFirstPassenger() != null) {
 						if(((LivingEntity) entity).getFirstPassenger() != this.getOwner()) {
-							BodyMoverEntity bodyMoverEntity = new BodyMoverEntity(this.getOwner(), this.getOwner().level);
+							BodyMoverEntity bodyMoverEntity = new BodyMoverEntity(this.getOwner(), this.getOwner().level());
 				 			bodyMoverEntity.setPos(entity.getX(), entity.getY(), entity.getZ());
 				 			entity.startRiding(bodyMoverEntity);
-				 			entity.level.addFreshEntity(bodyMoverEntity);
+				 			entity.level().addFreshEntity(bodyMoverEntity);
 						}
 					}else {
-						BodyMoverEntity bodyMoverEntity = new BodyMoverEntity(this.getOwner(), this.getOwner().level);
+						BodyMoverEntity bodyMoverEntity = new BodyMoverEntity(this.getOwner(), this.getOwner().level());
 			 			bodyMoverEntity.setPos(entity.getX(), entity.getY(), entity.getZ());
 			 			entity.startRiding(bodyMoverEntity);
-			 			entity.level.addFreshEntity(bodyMoverEntity);
+			 			entity.level().addFreshEntity(bodyMoverEntity);
 					}
 				}
 			}
@@ -108,7 +108,7 @@ public class Mobilicorpus extends DamageSpell {
 
 	protected void onHit(HitResult p_37388_) {
 		super.onHit(p_37388_);
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			this.discard();
 		}
 

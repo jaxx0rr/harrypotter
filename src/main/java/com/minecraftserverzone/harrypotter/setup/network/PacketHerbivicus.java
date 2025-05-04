@@ -38,7 +38,7 @@ public class PacketHerbivicus {
 	    ctx.get().enqueueWork(() -> {
 	    	// the client that sent this packet
 	        ServerPlayer player = ctx.get().getSender(); 
-	        Level level = player.level;
+	        Level level = player.level();
 	        if (WandItem.applyBonemeal(player.getItemInHand(InteractionHand.MAIN_HAND), level, blockpos, player)) {
 					player.playSound(Registrations.BUFF.get(), 1.0F, 1.0F);
 					Networking.sendToClient(new PacketHerbivicusToClient(player.getUUID()), (ServerPlayer) player);
